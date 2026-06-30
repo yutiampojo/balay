@@ -1,0 +1,187 @@
+import SiteNav from "@/app/components/SiteNav";
+import ListingCard from "@/app/components/ListingCard";
+import { getPublishedListings } from "@/lib/listings";
+
+export default async function Home() {
+  const listings = await getPublishedListings({ take: 6 });
+
+  return (
+    <>
+      <SiteNav />
+
+      <main id="top">
+        {/* HERO */}
+        <section className="hero">
+          <div className="wrap hero-grid">
+            <div>
+              <p className="eyebrow">Medium &amp; long-term rentals · Philippines</p>
+              <h1>Find a place you can&nbsp;actually <em>settle into.</em></h1>
+              <p className="lede">Verified homes for 3 months and up — condos, apartments, rooms and houses, priced by the month. No nightly stays, no surprises.</p>
+
+              <form className="searchcard" action="/rentals" method="get" aria-label="Search rentals">
+                <div className="searchrow">
+                  <div className="field">
+                    <label htmlFor="city">Where</label>
+                    <select id="city" name="city">
+                      <option value="">Any city</option>
+                      <option>Quezon City</option><option>Makati</option><option>Taguig</option>
+                      <option>Cebu City</option><option>Davao City</option><option>Baguio</option>
+                    </select>
+                  </div>
+                  <div className="field">
+                    <label htmlFor="minLease">Lease length</label>
+                    <select id="minLease" name="minLease">
+                      <option value="">Any length</option>
+                      <option value="3">3 months+</option><option value="6">6 months+</option>
+                      <option value="12">1 year+</option><option value="24">2 years+</option>
+                    </select>
+                  </div>
+                  <div className="field">
+                    <label htmlFor="maxRent">Monthly budget</label>
+                    <select id="maxRent" name="maxRent">
+                      <option value="">Any rent</option>
+                      <option value="10000">Up to ₱10k</option><option value="20000">Up to ₱20k</option>
+                      <option value="35000">Up to ₱35k</option><option value="60000">Up to ₱60k</option>
+                    </select>
+                  </div>
+                  <div className="field-go">
+                    <button className="btn btn-primary" type="submit">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
+                      Search
+                    </button>
+                  </div>
+                </div>
+              </form>
+
+              <div className="trustline">
+                <span><span className="dot" /> Verified owners</span>
+                <span><span className="dot" /> From 3 months</span>
+                <span><span className="dot" /> Monthly rent, never nightly</span>
+                <span><span className="dot" /> Admin-reviewed listings</span>
+              </div>
+            </div>
+
+            {/* hero visual */}
+            <div className="hero-visual" aria-hidden="true">
+              <div className="blob" style={{ width: 280, height: 280, background: "var(--mist)", right: 0, top: 30 }} />
+              <div className="blob" style={{ width: 200, height: 200, background: "var(--gold-soft)", left: 30, bottom: 0 }} />
+              <div className="float card-main">
+                <div className="seal"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 6 9 17l-5-5" /></svg>Verified unit</div>
+                <div className="thumb" style={{ background: "linear-gradient(135deg,#2E6B53,#13322A)" }}>
+                  <span className="pill">📍 Makati · Poblacion</span>
+                </div>
+                <div className="body">
+                  <div className="ttl">Bright 1BR near Ayala</div>
+                  <div className="loc">Studio-style condo · furnished</div>
+                  <div className="price">₱28,500 <small>/ month</small></div>
+                </div>
+              </div>
+              <div className="float card-mini">
+                <div className="row">
+                  <div className="avatar"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="8" r="4" /><path d="M5 20a7 7 0 0 1 14 0" /></svg></div>
+                  <div><div className="nm">Maria S. · Owner</div><div className="sub">ID &amp; ownership confirmed</div></div>
+                </div>
+                <div className="meter">
+                  <div className="meter-bar"><i style={{ width: "92%" }} /></div>
+                  <div className="meter-label"><span>Trust profile</span><span>Strong</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* TRUST STRIP */}
+        <div className="strip">
+          <div className="wrap strip-in">
+            <div className="stat"><div className="k tabular">3,200+</div><div className="l">Verified listings</div></div>
+            <div className="stat"><div className="k tabular">1,800</div><div className="l">ID-checked owners</div></div>
+            <div className="stat"><div className="k tabular">3<em>mo</em></div><div className="l">Minimum lease, always</div></div>
+            <div className="stat"><div className="k tabular">₱0</div><div className="l">Broker success fees</div></div>
+          </div>
+        </div>
+
+        {/* LISTINGS */}
+        <section id="listings">
+          <div className="wrap">
+            <div className="sec-head">
+              <p className="eyebrow">Homes available now</p>
+              <h2>Browse verified rentals</h2>
+              <p>Every home here is listed by an identity-checked owner and reviewed before it goes public.</p>
+            </div>
+            <div className="grid" style={{ marginTop: 30 }}>
+              {listings.map((l) => (
+                <ListingCard key={l.id} l={{ ...l, monthlyRent: Number(l.monthlyRent), floorArea: l.floorArea ? Number(l.floorArea) : null }} />
+              ))}
+            </div>
+            <div style={{ textAlign: "center", marginTop: 32 }}>
+              <a className="btn btn-ghost btn-lg" href="/rentals">See all homes</a>
+            </div>
+          </div>
+        </section>
+
+        {/* HOW IT WORKS */}
+        <section className="how">
+          <div className="wrap">
+            <div className="sec-head">
+              <p className="eyebrow">For tenants</p>
+              <h2>Three steps to a place that&apos;s yours</h2>
+              <p>You talk to owners directly. Balay gives you the tools and the checks — it never negotiates or decides for either side.</p>
+            </div>
+            <div className="steps">
+              <div className="step"><div className="num">1</div><h3>Search &amp; shortlist</h3><p>Filter by city, barangay, rent and lease length. Save the homes worth a second look.</p></div>
+              <div className="step"><div className="num">2</div><h3>Inquire with the owner</h3><p>Send your move-in date, intended lease length and a message. Verified badges show who you&apos;re talking to.</p></div>
+              <div className="step"><div className="num">3</div><h3>Apply with confidence</h3><p>Submit your details and documents securely. You consent to exactly what&apos;s processed.</p></div>
+            </div>
+          </div>
+        </section>
+
+        {/* OWNER BAND */}
+        <section id="owner">
+          <div className="wrap">
+            <div className="owner">
+              <div>
+                <p className="eyebrow">Become a Keyholder</p>
+                <h2>List your unit. Reach tenants who plan to stay.</h2>
+                <p>Any account can rent. To list, you verify once and become a <strong>Keyholder</strong> — built for owners who want serious, longer-term tenants, not nightly turnover.</p>
+                <ul>
+                  <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4"><path d="M20 6 9 17l-5-5" /></svg> Earn the Keyholder badge after a one-time ID and ownership check</li>
+                  <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4"><path d="M20 6 9 17l-5-5" /></svg> Set your own rent, deposit, rules and minimum lease</li>
+                  <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4"><path d="M20 6 9 17l-5-5" /></svg> Review inquiries and applications on your terms</li>
+                </ul>
+              </div>
+              <div className="owner-cta">
+                <a className="btn btn-primary btn-lg" href="/keyholder">Become a Keyholder</a>
+                <a className="btn btn-ghost btn-lg" href="/owner">See how it works</a>
+                <p className="note">Free plan includes 1 active listing. No success commission, ever.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer>
+        <div className="wrap">
+          <div className="foot-grid">
+            <div className="foot-brand">
+              <a className="brand" href="/">
+                <svg className="mark" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="9" fill="#13322A" /><path d="M16 7l7 6v11a1 1 0 0 1-1 1h-4v-6h-4v6h-4a1 1 0 0 1-1-1V13l7-6z" fill="#fff" /><circle cx="22.5" cy="9.5" r="3.4" fill="#A9761D" stroke="#13322A" strokeWidth="1.4" /></svg>
+                Balay
+              </a>
+              <p>A medium and long-term residential rental marketplace for the Philippines. Verified owners, monthly pricing, leases from 3 months.</p>
+            </div>
+            <div><h4>Explore</h4><a href="/rentals">Browse homes</a><a href="/rentals">Near review centers</a><a href="/rentals">For students</a></div>
+            <div><h4>Owners</h4><a href="/keyholder">List a property</a><a href="/owner">Verification</a><a href="/owner">Owner guide</a></div>
+            <div><h4>Account</h4><a href="/login">Log in</a><a href="/signup">Sign up</a><a href="/dashboard">Dashboard</a></div>
+          </div>
+          <p className="disclaimer">
+            Balay helps owners and tenants connect for medium and long-term residential rentals starting from 3 months and above. The platform does not own, operate, inspect, guarantee, or broker the listed properties unless expressly stated, and does not act as a real estate broker, legal adviser, or property manager. Owners are responsible for the accuracy, legality, and availability of their listings.
+          </p>
+          <div className="foot-base">
+            <span>© 2026 Balay. A listing &amp; rental-management platform.</span>
+            <span>Made for the long stay 🇵🇭</span>
+          </div>
+        </div>
+      </footer>
+    </>
+  );
+}

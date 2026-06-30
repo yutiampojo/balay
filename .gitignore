@@ -1,0 +1,19 @@
+# dependencies
+node_modules/
+
+# next.js
+.next/
+out/
+
+# env (secrets)
+.env
+.env.local
+.env*.local
+
+# build / misc
+dist/
+*.log
+.DS_Store
+
+# large source images — only the optimized public/ versions are committed
+/balay_property_photos/

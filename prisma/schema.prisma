@@ -1,0 +1,442 @@
+// Balay — medium/long-term rental marketplace (PH)
+// Prisma schema generated from SPECIFICATION §17 (Data Model) + chat tables.
+//
+// Stack: PostgreSQL (Supabase). Run:
+//   npx prisma migrate dev --name init
+//   npx prisma studio
+//
+// Notes:
+//  - Money uses Decimal(12,2) — never floats for currency.
+//  - Sensitive document URLs point at PRIVATE storage; serve via signed URLs only.
+//  - Full address (fullAddressPrivate) must never be exposed in public APIs.
+//  - Min lease duration (>= 3 months) is enforced in app/DB-check, see Listing.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ----------------------------------------------------------------------------
+// Enums
+// ----------------------------------------------------------------------------
+
+enum Role {
+  TENANT
+  OWNER
+  ADMIN
+}
+
+enum VerificationStatus {
+  NOT_VERIFIED
+  PENDING
+  VERIFIED
+  REJECTED
+  SUSPENDED
+}
+
+enum PropertyType {
+  ROOM
+  BEDSPACE
+  STUDIO
+  CONDO
+  APARTMENT
+  HOUSE
+  TOWNHOUSE
+  DORMITORY
+}
+
+enum FurnishingStatus {
+  UNFURNISHED
+  SEMI_FURNISHED
+  FURNISHED
+}
+
+enum ListingStatus {
+  DRAFT
+  PENDING_REVIEW
+  PUBLISHED
+  REJECTED
+  SUSPENDED
+  EXPIRED
+  PAUSED
+}
+
+enum TenantType {
+  REVIEWER
+  STUDENT
+  EMPLOYEE
+  FAMILY
+  REMOTE_WORKER
+  OTHER
+}
+
+enum InquiryStatus {
+  OPEN
+  REPLIED
+  CLOSED
+}
+
+enum ApplicationStatus {
+  PENDING
+  SHORTLISTED
+  ACCEPTED
+  REJECTED
+  WITHDRAWN
+}
+
+enum PaymentType {
+  LISTING_FEE
+  VERIFICATION_FEE
+  SUBSCRIPTION_FEE
+  FEATURED_LISTING_FEE
+  CONVENIENCE_FEE
+  RENT_PAYMENT
+  RESERVATION_FEE
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+enum ReportReason {
+  FAKE_LISTING
+  WRONG_PRICE
+  MISLEADING_PHOTOS
+  OWNER_UNREACHABLE
+  SCAM
+  PROPERTY_UNAVAILABLE
+  ILLEGAL_LISTING
+  HARASSMENT
+}
+
+enum ReportStatus {
+  OPEN
+  REVIEWING
+  RESOLVED
+  DISMISSED
+}
+
+// Generic document categories (verification, application, listing proofs).
+enum DocumentType {
+  GOVERNMENT_ID
+  PROOF_OF_INCOME
+  PROOF_OF_OWNERSHIP
+  AUTHORITY_TO_LEASE
+  CONDO_HOA_AUTHORIZATION
+  REFERENCE_LETTER
+  ENROLLMENT_PROOF
+  BUSINESS_PERMIT
+  OTHER
+}
+
+// ----------------------------------------------------------------------------
+// Core users & profiles
+// ----------------------------------------------------------------------------
+
+model User {
+  id                 String             @id @default(uuid())
+  role               Role               @default(TENANT)
+  fullName           String
+  email              String             @unique
+  phoneNumber        String?
+  passwordHash       String? // null when auth is delegated to Supabase Auth
+  profilePhotoUrl    String?
+  emailVerifiedAt    DateTime?
+  verificationStatus VerificationStatus @default(NOT_VERIFIED)
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+
+  ownerProfile  OwnerProfile?
+  tenantProfile TenantProfile?
+
+  listings           Listing[]      @relation("OwnerListings")
+  inquiriesAsTenant  Inquiry[]      @relation("TenantInquiries")
+  inquiriesAsOwner   Inquiry[]      @relation("OwnerInquiries")
+  applicationsAsTenant Application[] @relation("TenantApplications")
+  applicationsAsOwner  Application[] @relation("OwnerApplications")
+
+  documents       Document[]
+  paymentsMade    Payment[]      @relation("Payer")
+  paymentsGot     Payment[]      @relation("Receiver")
+  reportsFiled    Report[]       @relation("Reporter")
+  reportsReceived Report[]       @relation("ReportedUser")
+  auditLogs       AuditLog[]     @relation("AdminAudit")
+
+  conversationsA  Conversation[] @relation("ParticipantA")
+  conversationsB  Conversation[] @relation("ParticipantB")
+  messagesSent    Message[]      @relation("MessageSender")
+
+  @@index([role])
+  @@index([verificationStatus])
+}
+
+model OwnerProfile {
+  id                 String             @id @default(uuid())
+  userId             String             @unique
+  user               User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  businessName       String?
+  governmentIdUrl    String?
+  proofOfOwnershipUrl String?
+  authorityToLeaseUrl String?
+  verificationStatus VerificationStatus @default(NOT_VERIFIED)
+  adminNotes         String?
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+}
+
+model TenantProfile {
+  id                 String             @id @default(uuid())
+  userId             String             @unique
+  user               User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tenantType         TenantType         @default(OTHER)
+  employmentStatus   String?
+  incomeRange        String?
+  verificationStatus VerificationStatus @default(NOT_VERIFIED)
+  // rental preferences (spec §10.3 /tenant/preferences)
+  prefCities         String[]
+  prefMinLeaseMonths Int?
+  prefBudgetMax      Decimal?           @db.Decimal(12, 2)
+  prefMoveInDate     DateTime?
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+}
+
+// ----------------------------------------------------------------------------
+// Listings
+// ----------------------------------------------------------------------------
+
+model Listing {
+  id                 String             @id @default(uuid())
+  ownerId            String
+  owner              User               @relation("OwnerListings", fields: [ownerId], references: [id], onDelete: Cascade)
+  title              String
+  description        String
+  propertyType       PropertyType
+  city               String
+  barangay           String
+  fullAddressPrivate String // never expose publicly
+  monthlyRent        Decimal            @db.Decimal(12, 2)
+  securityDeposit    Decimal?           @db.Decimal(12, 2)
+  advancePayment     Decimal?           @db.Decimal(12, 2)
+  minimumLeaseMonths Int                @default(3) // business rule: >= 3
+  maximumLeaseMonths Int?
+  availableFrom      DateTime?
+  bedrooms           Int                @default(0)
+  bathrooms          Int                @default(0)
+  floorArea          Decimal?           @db.Decimal(8, 2) // m²
+  furnishingStatus   FurnishingStatus   @default(UNFURNISHED)
+  allowedOccupants   Int?
+  petPolicy          String?
+  utilitiesIncluded  String[]
+  amenities          String[]
+  houseRules         String[]
+  condoHoaRules      String?
+  verificationStatus VerificationStatus @default(NOT_VERIFIED)
+  listingStatus      ListingStatus      @default(DRAFT)
+  isFeatured         Boolean            @default(false)
+  featuredUntil      DateTime?
+  viewsCount         Int                @default(0)
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+
+  photos       ListingPhoto[]
+  inquiries    Inquiry[]
+  applications Application[]
+  reports      Report[]
+  payments     Payment[]
+  conversations Conversation[]
+
+  @@index([city, barangay])
+  @@index([listingStatus])
+  @@index([propertyType])
+  @@index([monthlyRent])
+  @@index([ownerId])
+}
+
+model ListingPhoto {
+  id        String   @id @default(uuid())
+  listingId String
+  listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  photoUrl  String
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([listingId])
+}
+
+// ----------------------------------------------------------------------------
+// Inquiries & applications
+// ----------------------------------------------------------------------------
+
+model Inquiry {
+  id                  String        @id @default(uuid())
+  listingId           String
+  listing             Listing       @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  tenantId            String
+  tenant              User          @relation("TenantInquiries", fields: [tenantId], references: [id])
+  ownerId             String
+  owner               User          @relation("OwnerInquiries", fields: [ownerId], references: [id])
+  message             String
+  preferredMoveInDate DateTime?
+  intendedLeaseMonths Int?
+  numberOfOccupants   Int?
+  status              InquiryStatus @default(OPEN)
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+
+  @@index([listingId])
+  @@index([tenantId])
+  @@index([ownerId])
+}
+
+model Application {
+  id               String            @id @default(uuid())
+  listingId        String
+  listing          Listing           @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  tenantId         String
+  tenant           User              @relation("TenantApplications", fields: [tenantId], references: [id])
+  ownerId          String
+  owner            User              @relation("OwnerApplications", fields: [ownerId], references: [id])
+  status           ApplicationStatus @default(PENDING)
+  tenantType       TenantType        @default(OTHER)
+  employmentStatus String?
+  incomeRange      String?
+  message          String?
+  consentGiven     Boolean           @default(false)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  documents Document[]
+
+  @@unique([listingId, tenantId]) // one application per tenant per listing
+  @@index([ownerId])
+  @@index([status])
+}
+
+// ----------------------------------------------------------------------------
+// Documents (private storage; access via signed URLs only)
+// ----------------------------------------------------------------------------
+
+model Document {
+  id            String       @id @default(uuid())
+  ownerUserId   String // who uploaded / owns this file
+  ownerUser     User         @relation(fields: [ownerUserId], references: [id], onDelete: Cascade)
+  type          DocumentType
+  fileUrl       String // private bucket path
+  fileName      String?
+  applicationId String?
+  application   Application? @relation(fields: [applicationId], references: [id], onDelete: SetNull)
+  createdAt     DateTime     @default(now())
+
+  @@index([ownerUserId])
+  @@index([applicationId])
+}
+
+// ----------------------------------------------------------------------------
+// Messaging (the Messages page → real persistence + Supabase Realtime)
+// ----------------------------------------------------------------------------
+
+model Conversation {
+  id            String    @id @default(uuid())
+  listingId     String?
+  listing       Listing?  @relation(fields: [listingId], references: [id], onDelete: SetNull)
+  participantAId String
+  participantA  User      @relation("ParticipantA", fields: [participantAId], references: [id])
+  participantBId String
+  participantB  User      @relation("ParticipantB", fields: [participantBId], references: [id])
+  lastMessageAt DateTime  @default(now())
+  createdAt     DateTime  @default(now())
+
+  messages Message[]
+
+  @@unique([participantAId, participantBId, listingId])
+  @@index([participantAId])
+  @@index([participantBId])
+}
+
+model Message {
+  id             String       @id @default(uuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  senderId       String
+  sender         User         @relation("MessageSender", fields: [senderId], references: [id])
+  body           String
+  readAt         DateTime?
+  createdAt      DateTime     @default(now())
+
+  @@index([conversationId])
+  @@index([senderId])
+}
+
+// ----------------------------------------------------------------------------
+// Payments
+// ----------------------------------------------------------------------------
+
+model Payment {
+  id                String        @id @default(uuid())
+  payerUserId       String
+  payer             User          @relation("Payer", fields: [payerUserId], references: [id])
+  receiverUserId    String?
+  receiver          User?         @relation("Receiver", fields: [receiverUserId], references: [id])
+  listingId         String?
+  listing           Listing?      @relation(fields: [listingId], references: [id], onDelete: SetNull)
+  paymentType       PaymentType
+  amount            Decimal       @db.Decimal(12, 2)
+  platformFee       Decimal       @default(0) @db.Decimal(12, 2)
+  gatewayFee        Decimal       @default(0) @db.Decimal(12, 2)
+  status            PaymentStatus @default(PENDING)
+  provider          String? // e.g. PayMongo, Xendit
+  providerReference String?
+  receiptUrl        String?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  @@index([payerUserId])
+  @@index([status])
+  @@index([paymentType])
+}
+
+// ----------------------------------------------------------------------------
+// Trust & safety
+// ----------------------------------------------------------------------------
+
+model Report {
+  id             String       @id @default(uuid())
+  reporterUserId String
+  reporter       User         @relation("Reporter", fields: [reporterUserId], references: [id])
+  listingId      String?
+  listing        Listing?     @relation(fields: [listingId], references: [id], onDelete: SetNull)
+  reportedUserId String?
+  reportedUser   User?        @relation("ReportedUser", fields: [reportedUserId], references: [id])
+  reason         ReportReason
+  description    String?
+  status         ReportStatus @default(OPEN)
+  adminNotes     String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@index([status])
+  @@index([listingId])
+}
+
+model AuditLog {
+  id          String   @id @default(uuid())
+  adminUserId String
+  admin       User     @relation("AdminAudit", fields: [adminUserId], references: [id])
+  action      String
+  targetType  String
+  targetId    String?
+  metadata    Json?
+  createdAt   DateTime @default(now())
+
+  @@index([adminUserId])
+  @@index([targetType, targetId])
+}
