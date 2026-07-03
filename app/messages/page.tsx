@@ -35,7 +35,7 @@ export default async function MessagesPage({ searchParams }: { searchParams: Pro
 
   return (
     <>
-      <div className="chat" style={{ height: "calc(100vh - 70px)" }}>
+      <div className={`chat${c ? " show-thread" : ""}`} style={{ height: "calc(100vh - 70px)" }}>
         {/* inbox */}
         <aside className="chat-list">
           <div className="lhead"><h2>Messages</h2></div>
@@ -76,6 +76,9 @@ export default async function MessagesPage({ searchParams }: { searchParams: Pro
           ) : (
             <>
               <div className="chat-head">
+                <a className="chat-back" href="/messages" aria-label="Back to conversations">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 18l-6-6 6-6" /></svg>
+                </a>
                 <span className="avatar">{initials(other(active).fullName)}</span>
                 <div>
                   <div className="ch-name">{other(active).fullName}</div>
