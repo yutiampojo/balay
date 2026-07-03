@@ -526,8 +526,9 @@ footer .disclaimer{font-size:.8rem;color:var(--muted);line-height:1.6;max-width:
 .fm-clear{background:none;border:none;font-weight:600;font-size:.95rem;text-decoration:underline;cursor:pointer;color:var(--ink)}
 @media(max-width:560px){
   .rentals-topbar{flex-direction:column;align-items:stretch}
-  /* reset the 320px flex-basis so it isn't treated as a HEIGHT in the column layout (was the giant empty gap) */
-  .topbar-search-wrap,.topbar-search{flex:0 1 auto}
+  /* reset the 320px flex-basis so it isn't treated as a HEIGHT in the column layout (was the giant empty gap).
+     Extra .rentals-topbar qualifier raises specificity so this beats the later `.topbar-search-wrap{flex:1 1 320px}`. */
+  .rentals-topbar .topbar-search-wrap,.rentals-topbar .topbar-search{flex:0 1 auto}
   .topbar-right{flex-wrap:wrap;gap:8px}
   .topbar-right .city-combo{flex:1 1 100%}
   .topbar-right .city-input{width:100%}
