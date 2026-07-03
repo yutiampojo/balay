@@ -29,20 +29,6 @@ export default function LoginPage() {
     router.refresh();
   }
 
-  async function onForgot() {
-    if (!email) {
-      setErr("Enter your email above first, then click Forgot.");
-      return;
-    }
-    setErr(null);
-    const supabase = createClient();
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${location.origin}/login`,
-    });
-    if (error) setErr(error.message);
-    else setMsg("Password reset link sent — check your email.");
-  }
-
   async function onGoogle() {
     const supabase = createClient();
     const { error } = await supabase.auth.signInWithOAuth({
@@ -76,7 +62,7 @@ export default function LoginPage() {
             <path d="M16 7l7 6v11a1 1 0 0 1-1 1h-4v-6h-4v6h-4a1 1 0 0 1-1-1V13l7-6z" fill="#13322A" />
             <circle cx="22.5" cy="9.5" r="3.4" fill="#A9761D" stroke="#fff" strokeWidth="1.4" />
           </svg>
-          Balay
+          Balaymo
         </a>
         <p className="auth-quote">
           Homes for the <span>long stay</span> — verified, monthly, from three months.
@@ -104,7 +90,7 @@ export default function LoginPage() {
             <div className="field-group">
               <label style={{ display: "flex", justifyContent: "space-between" }}>
                 Password
-                <a role="button" onClick={onForgot} style={{ fontWeight: 500, color: "var(--leaf)", cursor: "pointer" }}>Forgot?</a>
+                <a href="/forgot-password" style={{ fontWeight: 500, color: "var(--leaf)" }}>Forgot?</a>
               </label>
               <input className="input" type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required />
             </div>
@@ -124,7 +110,7 @@ export default function LoginPage() {
           </div>
 
           <p className="muted" style={{ textAlign: "center", marginTop: 24, fontSize: ".92rem" }}>
-            New to Balay? <a href="/signup" style={{ color: "var(--leaf)", fontWeight: 600 }}>Create an account</a>
+            New to Balaymo? <a href="/signup" style={{ color: "var(--leaf)", fontWeight: 600 }}>Create an account</a>
           </p>
         </div>
       </div>

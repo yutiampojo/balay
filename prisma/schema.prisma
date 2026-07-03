@@ -147,6 +147,7 @@ model User {
   fullName           String
   email              String             @unique
   phoneNumber        String?
+  phoneVerifiedAt    DateTime? // last time the number passed OTP; re-prompt every 3 months
   passwordHash       String? // null when auth is delegated to Supabase Auth
   profilePhotoUrl    String?
   emailVerifiedAt    DateTime?
@@ -173,6 +174,11 @@ model User {
   conversationsA  Conversation[] @relation("ParticipantA")
   conversationsB  Conversation[] @relation("ParticipantB")
   messagesSent    Message[]      @relation("MessageSender")
+
+  tenanciesAsTenant Tenancy[] @relation("TenantTenancies")
+  tenanciesAsOwner  Tenancy[] @relation("OwnerTenancies")
+
+  savedListings SavedListing[] @relation("UserSavedListings")
 
   @@index([role])
   @@index([verificationStatus])
@@ -233,6 +239,8 @@ model Listing {
   bathrooms          Int                @default(0)
   floorArea          Decimal?           @db.Decimal(8, 2) // m²
   furnishingStatus   FurnishingStatus   @default(UNFURNISHED)
+  latitude           Float? // approximate map coordinates (geocoded from area)
+  longitude          Float?
   allowedOccupants   Int?
   petPolicy          String?
   utilitiesIncluded  String[]
@@ -253,6 +261,8 @@ model Listing {
   reports      Report[]
   payments     Payment[]
   conversations Conversation[]
+  tenancies     Tenancy[]
+  savedBy       SavedListing[]
 
   @@index([city, barangay])
   @@index([listingStatus])
@@ -315,6 +325,7 @@ model Application {
   updatedAt        DateTime          @updatedAt
 
   documents Document[]
+  tenancy   Tenancy?
 
   @@unique([listingId, tenantId]) // one application per tenant per listing
   @@index([ownerId])
@@ -440,3 +451,56 @@ model AuditLog {
   @@index([adminUserId])
   @@index([targetType, targetId])
 }
+
+// ----------------------------------------------------------------------------
+// Tenancy (lease lifecycle) — created when an application is accepted.
+// A listing is "occupied" while it has an ACTIVE tenancy.
+// ----------------------------------------------------------------------------
+
+enum TenancyStatus {
+  ACTIVE
+  ENDED_EARLY
+  COMPLETED
+}
+
+model Tenancy {
+  id                String        @id @default(uuid())
+  listingId         String
+  listing           Listing       @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  tenantId          String
+  tenant            User          @relation("TenantTenancies", fields: [tenantId], references: [id])
+  ownerId           String
+  owner             User          @relation("OwnerTenancies", fields: [ownerId], references: [id])
+  applicationId     String?       @unique
+  application       Application?  @relation(fields: [applicationId], references: [id], onDelete: SetNull)
+  agreedLeaseMonths Int
+  startedAt         DateTime      @default(now())
+  endedAt           DateTime?
+  endReason         String?
+  status            TenancyStatus @default(ACTIVE)
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  @@index([listingId])
+  @@index([tenantId])
+  @@index([ownerId])
+  @@index([status])
+}
+
+// ----------------------------------------------------------------------------
+// Saved listings (favorites)
+// ----------------------------------------------------------------------------
+
+model SavedListing {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation("UserSavedListings", fields: [userId], references: [id], onDelete: Cascade)
+  listingId String
+  listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, listingId]) // save a listing at most once
+  @@index([userId])
+  @@index([listingId])
+}
+

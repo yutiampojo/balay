@@ -1,7 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
-import SiteNav from "@/app/components/SiteNav";
 import ApplyForm from "./ApplyForm";
 
 export const dynamic = "force-dynamic";
@@ -15,13 +14,14 @@ export default async function ApplyPage({ params }: { params: Promise<{ id: stri
 
   const listing = await prisma.listing.findFirst({
     where: { id, listingStatus: "PUBLISHED" },
-    include: { owner: { select: { fullName: true } } },
+    include: { owner: { select: { fullName: true } }, tenancies: { where: { status: "ACTIVE" }, select: { id: true }, take: 1 } },
   });
   if (!listing) notFound();
+  if (listing.ownerId === user.id) redirect(`/rentals/${id}`); // can't apply to your own listing
+  if (listing.tenancies.length > 0) redirect(`/rentals/${id}`); // unit is occupied
 
   return (
     <>
-      <SiteNav />
       <div className="wrap pagehead">
         <div className="crumbs"><a href={`/rentals/${id}`}>{listing.title}</a> <span>›</span> <span>Apply</span></div>
         <h1>Apply to rent</h1>

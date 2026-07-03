@@ -23,6 +23,28 @@ export async function sendMessage(formData: FormData) {
   await prisma.conversation.update({ where: { id: conversationId }, data: { lastMessageAt: new Date() } });
 
   revalidatePath("/messages");
+  revalidatePath("/", "layout"); // refresh the nav unread badge (nav lives in root layout)
+}
+
+// Mark all inbound messages in a conversation as read (called when opened).
+export async function markConversationRead(conversationId: string) {
+  const user = await getCurrentUser();
+  if (!user) return;
+
+  const convo = await prisma.conversation.findUnique({
+    where: { id: conversationId },
+    select: { participantAId: true, participantBId: true },
+  });
+  if (!convo || (convo.participantAId !== user.id && convo.participantBId !== user.id)) return;
+
+  const res = await prisma.message.updateMany({
+    where: { conversationId, senderId: { not: user.id }, readAt: null },
+    data: { readAt: new Date() },
+  });
+  if (res.count > 0) {
+    revalidatePath("/messages");
+    revalidatePath("/", "layout"); // drop the nav unread badge (nav lives in root layout)
+  }
 }
 
 // Start (or reuse) a conversation with a listing's owner, then open it.

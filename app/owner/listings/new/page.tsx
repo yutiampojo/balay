@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
-import SiteNav from "@/app/components/SiteNav";
 import ListingForm from "./ListingForm";
 
 export const dynamic = "force-dynamic";
@@ -12,7 +11,6 @@ export default async function NewListingPage() {
 
   return (
     <>
-      <SiteNav />
       <div className="wrap pagehead">
         <div className="crumbs"><a href="/dashboard">Dashboard</a> <span>›</span> <span>New listing</span></div>
         <h1>Create a listing</h1>
@@ -26,7 +24,7 @@ export default async function NewListingPage() {
         <ListingForm />
       </main>
 
-      <footer><div className="wrap"><div className="foot-base"><span>© 2026 Balay</span><a href="/dashboard">Back to dashboard</a></div></div></footer>
+      <footer><div className="wrap"><div className="foot-base"><span>© 2026 Balaymo</span><a href="/dashboard">Back to dashboard</a></div></div></footer>
     </>
   );
 }

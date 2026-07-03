@@ -12,6 +12,10 @@ export async function submitApplication(formData: FormData) {
   const listingId = String(formData.get("listingId") || "");
   const listing = await prisma.listing.findUnique({ where: { id: listingId }, select: { ownerId: true } });
   if (!listing) redirect("/rentals");
+  if (listing.ownerId === user.id) redirect(`/rentals/${listingId}`); // can't apply to your own listing
+
+  const taken = await prisma.tenancy.findFirst({ where: { listingId, status: "ACTIVE" }, select: { id: true } });
+  if (taken) redirect(`/rentals/${listingId}`); // unit is occupied
 
   const tenantType = (String(formData.get("tenantType") || "OTHER") as TenantType) || TenantType.OTHER;
   const employmentStatus = String(formData.get("employmentStatus") || "");

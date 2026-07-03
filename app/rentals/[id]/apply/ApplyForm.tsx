@@ -65,9 +65,9 @@ export default function ApplyForm({ listingId }: { listingId: string }) {
           <h3>Review &amp; consent</h3>
           <div className="consent">
             <label className="checkrow"><input type="checkbox" checked={consent1} onChange={(e) => setConsent1(e.target.checked)} />I confirm the information I&apos;m submitting is true and accurate.</label>
-            <label className="checkrow"><input type="checkbox" checked={consent2} onChange={(e) => setConsent2(e.target.checked)} />I consent to Balay and this Keyholder processing my personal information for this rental application, verification, communication, and safety purposes.</label>
+            <label className="checkrow"><input type="checkbox" checked={consent2} onChange={(e) => setConsent2(e.target.checked)} />I consent to Balaymo and this Keyholder processing my personal information for this rental application, verification, communication, and safety purposes.</label>
           </div>
-          <p className="muted" style={{ fontSize: ".8rem", marginTop: 12 }}>The Keyholder decides on applications directly. Balay doesn&apos;t approve, rank, or negotiate on either side&apos;s behalf.</p>
+          <p className="muted" style={{ fontSize: ".8rem", marginTop: 12 }}>The Keyholder decides on applications directly. Balaymo doesn&apos;t approve, rank, or negotiate on either side&apos;s behalf.</p>
         </div>
       </section>
 

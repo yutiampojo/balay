@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import SiteNav from "@/app/components/SiteNav";
-import { sendMessage } from "./actions";
+import ChatThread from "./ChatThread";
+import ReportButton from "@/app/components/ReportButton";
 
 export const dynamic = "force-dynamic";
 
@@ -22,7 +22,7 @@ export default async function MessagesPage({ searchParams }: { searchParams: Pro
     where: { OR: [{ participantAId: user.id }, { participantBId: user.id }] },
     orderBy: { lastMessageAt: "desc" },
     include: {
-      listing: { select: { title: true } },
+      listing: { select: { id: true, title: true, city: true, barangay: true, monthlyRent: true } },
       participantA: { select: { id: true, fullName: true } },
       participantB: { select: { id: true, fullName: true } },
       messages: { orderBy: { createdAt: "asc" } },
@@ -35,7 +35,6 @@ export default async function MessagesPage({ searchParams }: { searchParams: Pro
 
   return (
     <>
-      <SiteNav current="messages" />
       <div className="chat" style={{ height: "calc(100vh - 70px)" }}>
         {/* inbox */}
         <aside className="chat-list">
@@ -50,8 +49,10 @@ export default async function MessagesPage({ searchParams }: { searchParams: Pro
             {conversations.map((cv) => {
               const o = other(cv);
               const last = cv.messages[cv.messages.length - 1];
+              const unread = cv.messages.filter((m) => m.senderId !== user.id && !m.readAt).length;
+              const isUnread = unread > 0 && active?.id !== cv.id;
               return (
-                <a key={cv.id} href={`/messages?c=${cv.id}`} className={`conv${active?.id === cv.id ? " active" : ""}`}>
+                <a key={cv.id} href={`/messages?c=${cv.id}`} className={`conv${active?.id === cv.id ? " active" : ""}${isUnread ? " unread" : ""}`}>
                   <span className="avatar">{initials(o.fullName)}</span>
                   <span className="cv-body">
                     <span className="cv-top">
@@ -61,6 +62,7 @@ export default async function MessagesPage({ searchParams }: { searchParams: Pro
                     {cv.listing && <span className="cv-prop">{cv.listing.title}</span>}
                     <span className="cv-last">{last ? (last.senderId === user.id ? "You: " : "") + last.body : "No messages yet"}</span>
                   </span>
+                  {isUnread && <span className="cv-unread" aria-label={`${unread} unread`}>{unread}</span>}
                 </a>
               );
             })}
@@ -77,25 +79,27 @@ export default async function MessagesPage({ searchParams }: { searchParams: Pro
                 <span className="avatar">{initials(other(active).fullName)}</span>
                 <div>
                   <div className="ch-name">{other(active).fullName}</div>
-                  {active.listing && <div className="ch-sub">{active.listing.title}</div>}
+                  <div className="ch-sub">Conversation</div>
+                </div>
+                <div className="chat-head-actions">
+                  <ReportButton kind="user" reportedUserId={other(active).id} targetLabel={other(active).fullName.split(" ")[0]} className="report-link report-link-sm" />
                 </div>
               </div>
-              <div className="chat-body">
-                {active.messages.length === 0 && <div className="chat-empty">Say hello 👋</div>}
-                {active.messages.map((m) => (
-                  <div key={m.id} className={`msg ${m.senderId === user.id ? "out" : "in"}`}>
-                    {m.body}
-                    <span className="t">{timeLabel(m.createdAt)}</span>
-                  </div>
-                ))}
-              </div>
-              <form className="chat-composer" action={sendMessage}>
-                <input type="hidden" name="conversationId" value={active.id} />
-                <textarea name="body" rows={1} placeholder="Write a message…" required />
-                <button className="chat-send" type="submit" aria-label="Send">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z" /></svg>
-                </button>
-              </form>
+              {active.listing && (
+                <a className="chat-listing" href={`/rentals/${active.listing.id}`}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 11l9-7 9 7M5 10v10h14V10" /></svg>
+                  <span className="cl-body">
+                    <span className="cl-label">Inquiry about this listing</span>
+                    <span className="cl-title">{active.listing.title}</span>
+                    <span className="cl-meta">{active.listing.city} · {active.listing.barangay} · ₱{Number(active.listing.monthlyRent).toLocaleString("en-PH")}/mo</span>
+                  </span>
+                  <span className="cl-view">View →</span>
+                </a>
+              )}
+              <ChatThread
+                conversationId={active.id}
+                messages={active.messages.map((m) => ({ id: m.id, body: m.body, mine: m.senderId === user.id, time: timeLabel(m.createdAt) }))}
+              />
             </>
           )}
         </section>

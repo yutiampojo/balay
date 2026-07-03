@@ -5,6 +5,7 @@ import { revalidateTag } from "next/cache";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { PropertyType, FurnishingStatus } from "@prisma/client";
+import { geocodeArea } from "@/lib/geo";
 
 export async function createListing(formData: FormData) {
   const user = await getCurrentUser();
@@ -18,6 +19,10 @@ export async function createListing(formData: FormData) {
 
   const minLease = Math.max(3, num("minimumLeaseMonths", 3)); // business rule: >= 3
   const availableFrom = String(formData.get("availableFrom") || "");
+  const photoUrls = formData.getAll("photoUrls").map(String).filter(Boolean);
+  const city = String(formData.get("city") || "");
+  const barangay = String(formData.get("barangay") || "");
+  const [latitude, longitude] = await geocodeArea(city, barangay);
 
   await prisma.listing.create({
     data: {
@@ -25,8 +30,10 @@ export async function createListing(formData: FormData) {
       title: String(formData.get("title") || "Untitled listing"),
       description: String(formData.get("description") || ""),
       propertyType: (String(formData.get("propertyType")) as PropertyType) || PropertyType.CONDO,
-      city: String(formData.get("city") || ""),
-      barangay: String(formData.get("barangay") || ""),
+      city,
+      barangay,
+      latitude,
+      longitude,
       fullAddressPrivate: String(formData.get("fullAddress") || ""),
       monthlyRent: num("monthlyRent", 0),
       securityDeposit: num("securityDeposit", 0) || null,
@@ -45,6 +52,9 @@ export async function createListing(formData: FormData) {
         .filter(Boolean),
       verificationStatus: user.verificationStatus === "VERIFIED" ? "VERIFIED" : "PENDING",
       listingStatus: "PENDING_REVIEW", // admin must approve before public
+      photos: {
+        create: photoUrls.map((url, i) => ({ photoUrl: url, sortOrder: i })),
+      },
     },
   });
 
