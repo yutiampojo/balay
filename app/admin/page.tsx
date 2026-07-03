@@ -55,7 +55,7 @@ export default async function AdminConsole() {
                   {pendingListings.length === 0 ? (
                     <p className="muted">No listings awaiting review. 🎉</p>
                   ) : (
-                    <table className="table">
+                    <div className="table-scroll"><table className="table">
                       <thead><tr><th>Listing</th><th>Keyholder</th><th>Rent</th><th>Lease</th><th>Decision</th></tr></thead>
                       <tbody>
                         {pendingListings.map((l) => (
@@ -75,7 +75,7 @@ export default async function AdminConsole() {
                           </tr>
                         ))}
                       </tbody>
-                    </table>
+                    </table></div>
                   )}
                 </div>
               ),
@@ -108,7 +108,7 @@ export default async function AdminConsole() {
                   {reports.length === 0 ? (
                     <p className="muted">No reports filed.</p>
                   ) : (
-                    <table className="table">
+                    <div className="table-scroll"><table className="table">
                       <thead><tr><th>Target</th><th>Reason &amp; details</th><th>Reporter</th><th>Status</th><th>Decision</th></tr></thead>
                       <tbody>
                         {reports.map((r) => {
@@ -144,7 +144,7 @@ export default async function AdminConsole() {
                           );
                         })}
                       </tbody>
-                    </table>
+                    </table></div>
                   )}
                 </div>
               ),
@@ -168,13 +168,13 @@ export default async function AdminConsole() {
                   {audit.length === 0 ? (
                     <p className="muted">No admin actions logged yet.</p>
                   ) : (
-                    <table className="table">
+                    <div className="table-scroll"><table className="table">
                       <tbody>
                         {audit.map((a) => (
                           <tr key={a.id}><td className="muted" style={{ width: 160 }}>{new Date(a.createdAt).toLocaleString("en-PH")}</td><td><strong>{a.admin.fullName}</strong> — {a.action.replace(/_/g, " ")} {a.targetType} {a.targetId?.slice(0, 8)}</td></tr>
                         ))}
                       </tbody>
-                    </table>
+                    </table></div>
                   )}
                 </div>
               ),

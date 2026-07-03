@@ -50,7 +50,7 @@ export default async function TenancyHistory() {
           {tenancies.length === 0 ? (
             <p className="muted">No tenancies yet. When you accept an applicant, their tenancy is recorded here.</p>
           ) : (
-            <table className="table">
+            <div className="table-scroll"><table className="table">
               <thead>
                 <tr><th>Property</th><th>Tenant</th><th>Period</th><th>Duration</th><th>Agreed term</th><th>Status</th><th>Reason</th></tr>
               </thead>
@@ -70,7 +70,7 @@ export default async function TenancyHistory() {
                   );
                 })}
               </tbody>
-            </table>
+            </table></div>
           )}
         </div>
       </main>

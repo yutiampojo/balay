@@ -81,7 +81,7 @@ export default async function Dashboard() {
           {applications.length === 0 ? (
             <p className="muted">No applications yet. <a href="/rentals" style={{ color: "var(--leaf)" }}>Browse homes →</a></p>
           ) : (
-            <table className="table">
+            <div className="table-scroll"><table className="table">
               <thead><tr><th>Listing</th><th>Status</th></tr></thead>
               <tbody>
                 {applications.map((a) => (
@@ -91,7 +91,7 @@ export default async function Dashboard() {
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </table></div>
           )}
         </div>
 
@@ -100,13 +100,13 @@ export default async function Dashboard() {
           {inquiries.length === 0 ? (
             <p className="muted">No inquiries sent yet.</p>
           ) : (
-            <table className="table">
+            <div className="table-scroll"><table className="table">
               <tbody>
                 {inquiries.map((i) => (
                   <tr key={i.id}><td><strong>{i.listing.title}</strong></td><td><span className="status ok">{cap(i.status)}</span></td></tr>
                 ))}
               </tbody>
-            </table>
+            </table></div>
           )}
         </div>
       </main>

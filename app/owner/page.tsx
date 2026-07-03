@@ -67,7 +67,7 @@ export default async function OwnerDashboard() {
           {listings.length === 0 ? (
             <p className="muted">No listings yet. <a href="/owner/listings/new" style={{ color: "var(--leaf)" }}>Create your first listing →</a></p>
           ) : (
-            <table className="table">
+            <div className="table-scroll"><table className="table">
               <thead><tr><th>Listing</th><th>Rent</th><th>Lease</th><th>Status</th><th>Apps</th><th></th></tr></thead>
               <tbody>
                 {listings.map((l) => (
@@ -89,7 +89,7 @@ export default async function OwnerDashboard() {
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </table></div>
           )}
         </div>
 
@@ -100,7 +100,7 @@ export default async function OwnerDashboard() {
           {applications.length === 0 ? (
             <p className="muted">No applications yet.</p>
           ) : (
-            <table className="table">
+            <div className="table-scroll"><table className="table">
               <thead><tr><th>Applicant</th><th>Listing</th><th>Type</th><th>Status</th><th>Decision</th></tr></thead>
               <tbody>
                 {applications.map((a) => (
@@ -122,7 +122,7 @@ export default async function OwnerDashboard() {
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </table></div>
           )}
         </div>
 
@@ -132,14 +132,14 @@ export default async function OwnerDashboard() {
           {inquiries.length === 0 ? (
             <p className="muted">No inquiries yet.</p>
           ) : (
-            <table className="table">
+            <div className="table-scroll"><table className="table">
               <thead><tr><th>From</th><th>Listing</th><th>Intended lease</th><th>Status</th></tr></thead>
               <tbody>
                 {inquiries.map((i) => (
                   <tr key={i.id}><td>{i.tenant.fullName}</td><td>{i.listing.title}</td><td>{i.intendedLeaseMonths ? `${i.intendedLeaseMonths} mo` : "—"}</td><td><span className="status info">{cap(i.status)}</span></td></tr>
                 ))}
               </tbody>
-            </table>
+            </table></div>
           )}
         </div>
       </main>

@@ -43,7 +43,7 @@ export default function ActiveListings({ listings }: { listings: Row[] }) {
       ) : rows.length === 0 ? (
         <p className="muted">No listings match “{q}”.</p>
       ) : (
-        <table className="table">
+        <div className="table-scroll"><table className="table">
           <thead><tr><th>Listing</th><th>Keyholder</th><th>Rent</th><th>Lease</th><th>Action</th></tr></thead>
           <tbody>
             {rows.map((l) => (
@@ -59,7 +59,7 @@ export default function ActiveListings({ listings }: { listings: Row[] }) {
               </tr>
             ))}
           </tbody>
-        </table>
+        </table></div>
       )}
     </div>
   );

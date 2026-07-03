@@ -88,7 +88,7 @@ header.nav{position:sticky;top:0;z-index:50;background:rgba(251,252,249,.85);bac
 .card-pad{padding:24px}
 
 /* page header band */
-.pagehead{padding:40px 0 8px}
+.pagehead{padding-top:40px;padding-bottom:8px}
 .crumbs{font-size:.84rem;color:var(--muted);display:flex;gap:.5rem;align-items:center;margin-bottom:14px}
 .crumbs a:hover{color:var(--ink)}
 .pagehead h1{font-size:clamp(1.9rem,3.6vw,2.6rem);font-weight:700}
@@ -135,6 +135,9 @@ header.nav{position:sticky;top:0;z-index:50;background:rgba(251,252,249,.85);bac
 .stepper .s.done{border-top-color:var(--leaf);color:var(--leaf)}
 
 /* tables */
+/* horizontal-scroll wrapper so wide tables scroll inside their card on mobile instead of overflowing the page */
+.table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+@media(max-width:680px){.table-scroll .table{min-width:560px}}
 .table{width:100%;border-collapse:collapse;font-size:.9rem}
 .table th{text-align:left;font-size:.74rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600;padding:10px 14px;border-bottom:1px solid var(--line)}
 .table td{padding:14px;border-bottom:1px solid var(--line);vertical-align:middle}
@@ -336,7 +339,7 @@ footer .disclaimer{font-size:.8rem;color:var(--muted);line-height:1.6;max-width:
 .meter-label{display:flex;justify-content:space-between;font-size:.72rem;color:var(--muted);margin-top:6px}
 .blob{position:absolute;border-radius:50%;filter:blur(46px);opacity:.55;z-index:0}
 .strip{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:#fff}
-.strip-in{display:grid;grid-template-columns:repeat(4,1fr);gap:32px;padding:34px 0}
+.strip-in{display:grid;grid-template-columns:repeat(4,1fr);gap:32px;padding-top:34px;padding-bottom:34px}
 .stat .k{font-family:var(--font-display);font-weight:700;font-size:1.85rem;color:var(--ink)}
 .stat .l{font-size:.86rem;color:var(--muted);margin-top:2px}
 .stat .k em{font-style:normal;color:var(--gold)}
@@ -378,8 +381,7 @@ footer .disclaimer{font-size:.8rem;color:var(--muted);line-height:1.6;max-width:
 @media(max-width:980px){
   .hero-grid{grid-template-columns:1fr;gap:8px}
   .hero-visual{display:none}
-  .strip-in{grid-template-columns:repeat(2,1fr);gap:24px 18px}
-  .strip-in .stat{text-align:center}
+  .strip-in{grid-template-columns:repeat(2,1fr);gap:24px}
   .grid{grid-template-columns:repeat(2,1fr)}
   .steps{grid-template-columns:1fr}
   .owner{grid-template-columns:1fr;padding:34px}

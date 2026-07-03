@@ -40,7 +40,7 @@ export default function UsersTable({ users, currentUserId }: { users: Row[]; cur
       ) : rows.length === 0 ? (
         <p className="muted">No users match “{q}”.</p>
       ) : (
-        <table className="table">
+        <div className="table-scroll"><table className="table">
           <thead><tr><th>User</th><th>Role</th><th>Verification</th><th>Action</th></tr></thead>
           <tbody>
             {rows.map((u) => (
@@ -68,7 +68,7 @@ export default function UsersTable({ users, currentUserId }: { users: Row[]; cur
               </tr>
             ))}
           </tbody>
-        </table>
+        </table></div>
       )}
     </div>
   );
