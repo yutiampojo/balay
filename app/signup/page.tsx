@@ -91,7 +91,7 @@ export default function SignupPage() {
               </select>
             </div>
             <button className="btn btn-primary btn-block btn-lg" type="submit" disabled={busy}>
-              {busy ? "Creating…" : "Create account"}
+              {busy ? <><span className="spinner" aria-hidden="true" />Creating…</> : "Create account"}
             </button>
           </form>
 

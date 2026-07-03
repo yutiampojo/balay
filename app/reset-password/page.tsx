@@ -107,7 +107,7 @@ export default function ResetPasswordPage() {
                   <input className="input" type="password" placeholder="••••••••" value={confirm} onChange={(e) => setConfirm(e.target.value)} required minLength={8} />
                 </div>
                 <button className="btn btn-primary btn-block btn-lg" type="submit" disabled={busy || ready === null}>
-                  {ready === null ? "Verifying link…" : busy ? "Updating…" : "Update password"}
+                  {ready === null ? <><span className="spinner" aria-hidden="true" />Verifying link…</> : busy ? <><span className="spinner" aria-hidden="true" />Updating…</> : "Update password"}
                 </button>
               </form>
             </>

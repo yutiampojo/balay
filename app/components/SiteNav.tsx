@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import NavTabs, { type NavTab } from "@/app/components/NavTabs";
+import MobileMenu from "@/app/components/MobileMenu";
 
 // Tab icons (stroke inherits currentColor so they follow active/hover state).
 const I = {
@@ -82,6 +83,7 @@ export default async function SiteNav() {
             </>
           )}
         </div>
+        <MobileMenu tabs={tabs} loggedIn={loggedIn} firstName={firstName} />
       </div>
     </header>
   );

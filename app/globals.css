@@ -59,7 +59,16 @@ header.nav{position:sticky;top:0;z-index:50;background:rgba(251,252,249,.85);bac
 .nav-cta{display:flex;align-items:center;gap:.7rem}
 .avatar-btn{display:flex;align-items:center;gap:.55rem;border:1px solid var(--line);background:#fff;border-radius:var(--r-pill);padding:.3rem .8rem .3rem .35rem;cursor:pointer;font-weight:600;font-size:.9rem;color:var(--ink)}
 .avatar{width:34px;height:34px;border-radius:50%;background:var(--mist);display:flex;align-items:center;justify-content:center;color:var(--leaf);flex:0 0 auto}
-.menu-btn{display:none;background:none;border:1px solid var(--line);border-radius:var(--r-sm);width:42px;height:42px;align-items:center;justify-content:center;cursor:pointer}
+.menu-btn{display:none;background:none;border:1px solid var(--line);border-radius:var(--r-sm);width:42px;height:42px;align-items:center;justify-content:center;cursor:pointer;color:var(--ink)}
+/* mobile nav drawer (opened by .menu-btn under 680px) */
+.mobile-menu-ov{position:fixed;inset:0;z-index:60;background:rgba(19,50,42,.28)}
+.mobile-menu{position:fixed;top:70px;left:0;right:0;z-index:61;background:#fff;border-bottom:1px solid var(--line);box-shadow:var(--shadow-md);display:flex;flex-direction:column;padding:8px 0 14px;max-height:calc(100vh - 70px);overflow-y:auto;animation:revealDown .2s ease}
+.mobile-menu a{display:flex;align-items:center;gap:.65rem;padding:.9rem 22px;font-size:1rem;font-weight:500;color:var(--ink)}
+.mobile-menu > a svg{width:20px;height:20px;flex:0 0 auto;opacity:.8}
+.mobile-menu > a.current{color:var(--pine)}
+.mobile-menu-auth{display:flex;flex-direction:column;gap:8px;padding:14px 22px 2px;margin-top:6px;border-top:1px solid var(--line)}
+.mobile-menu-auth .btn{width:100%;justify-content:center}
+@media(prefers-reduced-motion:reduce){.mobile-menu{animation:none}}
 
 /* badges & pills */
 .vbadge{font-size:.72rem;font-weight:600;padding:.26rem .55rem;border-radius:var(--r-pill);display:inline-flex;align-items:center;gap:.35rem;background:var(--gold-soft);color:var(--gold);border:1px solid rgba(169,118,29,.25)}
@@ -244,6 +253,7 @@ footer .disclaimer{font-size:.8rem;color:var(--muted);line-height:1.6;max-width:
 }
 @media(max-width:680px){
   .navlinks{display:none}
+  .nav-cta{display:none}
   .menu-btn{display:flex}
   .grid-2,.grid-3,.chk-grid,.spec-list{grid-template-columns:1fr}
   .gallery{grid-template-columns:1fr 1fr;height:300px}
