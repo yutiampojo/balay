@@ -33,6 +33,11 @@ img{max-width:100%;display:block}
 .btn-danger:hover{background:var(--danger-soft)}
 .btn-sm{padding:.5rem 1rem;font-size:.86rem}
 .btn-lg{padding:.95rem 1.7rem;font-size:1rem}
+.btn:disabled{opacity:.72;cursor:default;transform:none}
+/* inline loading spinner — inherits button text color, scales with font size */
+.spinner{width:1em;height:1em;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;display:inline-block;animation:spin .6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.spinner{animation-duration:1.5s}}
 .btn-block{width:100%}
 .btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
 

@@ -20,11 +20,13 @@ export default function LoginPage() {
     setBusy(true);
     const supabase = createClient();
     const { error } = await supabase.auth.signInWithPassword({ email, password });
-    setBusy(false);
     if (error) {
+      setBusy(false);
       setErr(error.message);
       return;
     }
+    // Keep the button in its loading state through the navigation — the
+    // /rentals page is server-rendered, so leave the spinner up until it lands.
     router.push("/rentals");
     router.refresh();
   }
@@ -99,7 +101,7 @@ export default function LoginPage() {
               Keep me logged in on this device
             </label>
             <button className="btn btn-primary btn-block btn-lg" type="submit" disabled={busy}>
-              {busy ? "Logging in…" : "Log in"}
+              {busy ? <><span className="spinner" aria-hidden="true" />Logging in…</> : "Log in"}
             </button>
           </form>
 
