@@ -10,13 +10,11 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [keep, setKeep] = useState(true);
   const [err, setErr] = useState<string | null>(null);
-  const [msg, setMsg] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setErr(null);
-    setMsg(null);
     setBusy(true);
     const supabase = createClient();
     const { error } = await supabase.auth.signInWithPassword({ email, password });
@@ -38,21 +36,6 @@ export default function LoginPage() {
       options: { redirectTo: `${location.origin}/auth/callback?next=/rentals` },
     });
     if (error) setErr("Google sign-in isn't enabled yet. Use email & password.");
-  }
-
-  async function onMagicLink() {
-    if (!email) {
-      setErr("Enter your email above first, then click Email link.");
-      return;
-    }
-    setErr(null);
-    const supabase = createClient();
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: { emailRedirectTo: `${location.origin}/auth/callback?next=/rentals` },
-    });
-    if (error) setErr(error.message);
-    else setMsg("Login link sent — check your email.");
   }
 
   return (
@@ -78,7 +61,6 @@ export default function LoginPage() {
           </p>
 
           {err && <div className="banner" style={{ background: "var(--danger-soft)", marginBottom: 16, fontSize: ".88rem" }}>{err}</div>}
-          {msg && <div className="banner green" style={{ marginBottom: 16, fontSize: ".88rem" }}>{msg}</div>}
 
           <form onSubmit={onSubmit}>
             <div className="field-group">
@@ -103,8 +85,7 @@ export default function LoginPage() {
 
           <div className="divider">or</div>
           <div className="soc">
-            <button type="button" className="btn btn-ghost" onClick={onGoogle}>Google</button>
-            <button type="button" className="btn btn-ghost" onClick={onMagicLink}>Email link</button>
+            <button type="button" className="btn btn-ghost" onClick={onGoogle}>Continue with Google</button>
           </div>
 
           <p className="muted" style={{ textAlign: "center", marginTop: 24, fontSize: ".92rem" }}>
