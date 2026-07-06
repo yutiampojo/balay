@@ -1,6 +1,10 @@
 import ListingCard from "@/app/components/ListingCard";
 import { getPublishedListings } from "@/lib/listings";
 import { photoSrc } from "@/lib/photo";
+import { prisma } from "@/lib/prisma";
+
+// Refresh the homepage (featured listings + live stats) every 5 minutes.
+export const revalidate = 300;
 
 const TYPE_LABEL: Record<string, string> = {
   ROOM: "Room", BEDSPACE: "Bedspace", STUDIO: "Studio", CONDO: "Condo",
@@ -10,7 +14,12 @@ const peso = (n: number) => "₱" + n.toLocaleString("en-PH");
 
 export default async function Home() {
   const listings = await getPublishedListings({ take: 6 });
+  const [verifiedListings, verifiedOwners] = await Promise.all([
+    prisma.listing.count({ where: { listingStatus: "PUBLISHED", verificationStatus: "VERIFIED" } }),
+    prisma.user.count({ where: { role: "OWNER", verificationStatus: "VERIFIED" } }),
+  ]);
   const hero = listings[0]; // feature a real available unit in the visual
+  const fmt = (n: number) => n.toLocaleString("en-PH");
 
   return (
     <>
@@ -114,8 +123,8 @@ export default async function Home() {
         {/* TRUST STRIP */}
         <div className="strip">
           <div className="wrap strip-in">
-            <div className="stat"><div className="k tabular">3,200+</div><div className="l">Verified listings</div></div>
-            <div className="stat"><div className="k tabular">1,800</div><div className="l">ID-checked owners</div></div>
+            <div className="stat"><div className="k tabular">{fmt(verifiedListings)}</div><div className="l">Verified listings</div></div>
+            <div className="stat"><div className="k tabular">{fmt(verifiedOwners)}</div><div className="l">ID-checked owners</div></div>
             <div className="stat"><div className="k tabular">3<em>mo</em></div><div className="l">Minimum lease, always</div></div>
             <div className="stat"><div className="k tabular">₱0</div><div className="l">Broker success fees</div></div>
           </div>
@@ -199,7 +208,7 @@ export default async function Home() {
           </p>
           <div className="foot-base">
             <span>© 2026 Balaymo. A listing &amp; rental-management platform.</span>
-            <span>Made for the long stay 🇵🇭</span>
+            <span><a href="/terms">Terms</a> · <a href="/privacy">Privacy</a> · Made for the long stay 🇵🇭</span>
           </div>
         </div>
       </footer>

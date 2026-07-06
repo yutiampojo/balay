@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
@@ -17,6 +18,30 @@ const TYPE_LABEL: Record<string, string> = {
 const FURNISH_LABEL: Record<string, string> = {
   UNFURNISHED: "Unfurnished", SEMI_FURNISHED: "Semi-furnished", FURNISHED: "Furnished",
 };
+
+// Per-listing SEO so each home has its own title/description and social preview.
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params;
+  const l = await prisma.listing.findFirst({
+    where: { id, listingStatus: "PUBLISHED" },
+    select: {
+      title: true, city: true, barangay: true, propertyType: true, monthlyRent: true,
+      photos: { select: { photoUrl: true }, orderBy: { sortOrder: "asc" }, take: 1 },
+    },
+  });
+  if (!l) return { title: "Listing not found — Balaymo" };
+  const price = peso(Number(l.monthlyRent));
+  const type = TYPE_LABEL[l.propertyType] ?? l.propertyType;
+  const title = `${l.title} · ${price}/mo — Balaymo`;
+  const description = `${type} in ${l.barangay}, ${l.city} for ${price}/month. Verified medium & long-term rental on Balaymo.`;
+  const img = l.photos[0] ? photoSrc(l.photos[0].photoUrl) : undefined;
+  return {
+    title,
+    description,
+    openGraph: { title, description, type: "website", images: img ? [{ url: img }] : undefined },
+    twitter: { card: img ? "summary_large_image" : "summary", title, description },
+  };
+}
 
 export default async function ListingDetail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
