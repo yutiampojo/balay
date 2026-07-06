@@ -11,13 +11,11 @@ export default function SignupPage() {
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("TENANT");
   const [err, setErr] = useState<string | null>(null);
-  const [msg, setMsg] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setErr(null);
-    setMsg(null);
     setBusy(true);
     const supabase = createClient();
     const { data, error } = await supabase.auth.signUp({
@@ -28,18 +26,19 @@ export default function SignupPage() {
         emailRedirectTo: `${location.origin}/auth/callback`,
       },
     });
-    setBusy(false);
 
     if (error) {
+      setBusy(false);
       setErr(error.message);
       return;
     }
+    // Keep the button spinning through the redirect to the next page.
     if (data.session) {
       router.push("/rentals");
-      router.refresh();
     } else {
-      setMsg("Check your email to confirm your account, then log in.");
+      router.push(`/verify-email?email=${encodeURIComponent(email)}`);
     }
+    router.refresh();
   }
 
   return (
@@ -63,7 +62,6 @@ export default function SignupPage() {
           <p className="muted" style={{ margin: "8px 0 26px" }}>Find a home, or list your property.</p>
 
           {err && <div className="banner" style={{ background: "var(--danger-soft)", marginBottom: 16, fontSize: ".88rem" }}>{err}</div>}
-          {msg && <div className="banner green" style={{ marginBottom: 16, fontSize: ".88rem" }}>{msg}</div>}
 
           <form onSubmit={onSubmit}>
             <div className="field-group">
