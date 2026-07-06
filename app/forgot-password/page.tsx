@@ -34,11 +34,7 @@ export default function ForgotPasswordPage() {
     <div className="auth">
       <div className="auth-aside">
         <a className="brand" href="/">
-          <svg className="mark" viewBox="0 0 32 32" fill="none">
-            <rect width="32" height="32" rx="9" fill="#fff" />
-            <path d="M16 7l7 6v11a1 1 0 0 1-1 1h-4v-6h-4v6h-4a1 1 0 0 1-1-1V13l7-6z" fill="#13322A" />
-            <circle cx="22.5" cy="9.5" r="3.4" fill="#A9761D" stroke="#fff" strokeWidth="1.4" />
-          </svg>
+          <img className="mark" src="/logo-mark-white.png" alt="" width="30" height="30" />
           Balaymo
         </a>
         <p className="auth-quote">

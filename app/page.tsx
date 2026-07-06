@@ -185,7 +185,7 @@ export default async function Home() {
           <div className="foot-grid">
             <div className="foot-brand">
               <a className="brand" href="/">
-                <svg className="mark" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="9" fill="#13322A" /><path d="M16 7l7 6v11a1 1 0 0 1-1 1h-4v-6h-4v6h-4a1 1 0 0 1-1-1V13l7-6z" fill="#fff" /><circle cx="22.5" cy="9.5" r="3.4" fill="#A9761D" stroke="#13322A" strokeWidth="1.4" /></svg>
+                <img className="mark" src="/logo-mark.png" alt="" width="30" height="30" />
                 Balaymo
               </a>
               <p>A medium and long-term residential rental marketplace for the Philippines. Verified owners, monthly pricing, leases from 3 months.</p>
