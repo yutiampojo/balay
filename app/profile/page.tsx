@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import PhoneForm from "./PhoneForm";
 import AvatarUpload from "./AvatarUpload";
+import DeleteUserButton from "@/app/components/DeleteUserButton";
 import { phoneStatus, daysUntilExpiry } from "@/lib/phone";
 
 const initialsOf = (name: string) => name.split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase();
@@ -75,6 +76,16 @@ export default async function ProfilePage() {
           )}
           <p className="hint" style={{ marginBottom: 18 }}>Keep your number up to date — we ask you to reconfirm it every 3 months.</p>
           <PhoneForm currentPhone={user.phoneNumber} needsReconfirm={status === "expired"} />
+        </div>
+
+        {/* danger zone */}
+        <div className="card card-pad" style={{ marginTop: 20, borderColor: "var(--danger-soft)" }}>
+          <h3 style={{ marginBottom: 6 }}>Delete account</h3>
+          <p className="muted" style={{ marginBottom: 16, lineHeight: 1.6 }}>
+            Permanently delete your Balaymo account and everything tied to it — listings, applications, inquiries,
+            messages, saved homes, and tenancy records. This can&apos;t be undone.
+          </p>
+          <DeleteUserButton userId={user.id} self />
         </div>
       </main>
     </>

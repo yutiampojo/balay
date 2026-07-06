@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { makeAdmin, revokeAdmin } from "./actions";
+import DeleteUserButton from "@/app/components/DeleteUserButton";
 
 type Row = {
   id: string;
@@ -49,21 +50,24 @@ export default function UsersTable({ users, currentUserId }: { users: Row[]; cur
                 <td><span className={`status ${u.role === "ADMIN" ? "info" : "draft"}`}>{cap(u.role)}</span></td>
                 <td><span className={`status ${u.verificationStatus === "VERIFIED" ? "ok" : "pending"}`}>{cap(u.verificationStatus.replace(/_/g, " "))}</span></td>
                 <td>
-                  {u.role === "ADMIN" ? (
-                    u.id === currentUserId ? (
-                      <span className="muted" style={{ fontSize: ".8rem" }}>You</span>
+                  <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+                    {u.role === "ADMIN" ? (
+                      u.id === currentUserId ? (
+                        <span className="muted" style={{ fontSize: ".8rem" }}>You</span>
+                      ) : (
+                        <form action={revokeAdmin}>
+                          <input type="hidden" name="userId" value={u.id} />
+                          <button className="btn btn-ghost btn-sm" type="submit">Revoke admin</button>
+                        </form>
+                      )
                     ) : (
-                      <form action={revokeAdmin}>
+                      <form action={makeAdmin}>
                         <input type="hidden" name="userId" value={u.id} />
-                        <button className="btn btn-danger btn-sm" type="submit">Revoke admin</button>
+                        <button className="btn btn-ghost btn-sm" type="submit">Make admin</button>
                       </form>
-                    )
-                  ) : (
-                    <form action={makeAdmin}>
-                      <input type="hidden" name="userId" value={u.id} />
-                      <button className="btn btn-ghost btn-sm" type="submit">Make admin</button>
-                    </form>
-                  )}
+                    )}
+                    {u.id !== currentUserId && <DeleteUserButton userId={u.id} name={u.fullName} />}
+                  </div>
                 </td>
               </tr>
             ))}
