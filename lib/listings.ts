@@ -1,6 +1,7 @@
 import { unstable_cache } from "next/cache";
 import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
+import { listingRatings } from "@/lib/reviews";
 
 export type SortKey = "new" | "price_asc" | "price_desc";
 
@@ -33,6 +34,8 @@ export type PublicListing = {
   ownerVerified: boolean;
   latitude: number | null;
   longitude: number | null;
+  rating: number;
+  reviewCount: number;
   photos: { photoUrl: string }[];
 };
 
@@ -90,12 +93,18 @@ export function getPublishedListings(filters: ListingFilters = {}): Promise<Publ
           photos: { select: { photoUrl: true }, orderBy: { sortOrder: "asc" }, take: 1 },
         },
       });
-      return rows.map(({ owner, ...l }) => ({
-        ...l,
-        ownerVerified: owner.verificationStatus === "VERIFIED",
-        monthlyRent: Number(l.monthlyRent),
-        floorArea: l.floorArea ? Number(l.floorArea) : null,
-      }));
+      const ratings = await listingRatings(rows.map((r) => r.id));
+      return rows.map(({ owner, ...l }) => {
+        const r = ratings.get(l.id);
+        return {
+          ...l,
+          ownerVerified: owner.verificationStatus === "VERIFIED",
+          monthlyRent: Number(l.monthlyRent),
+          floorArea: l.floorArea ? Number(l.floorArea) : null,
+          rating: r?.avg ?? 0,
+          reviewCount: r?.count ?? 0,
+        };
+      });
     },
     ["published-listings", key],
     { tags: ["listings"], revalidate: 300 }

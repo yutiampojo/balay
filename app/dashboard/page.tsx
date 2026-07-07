@@ -2,6 +2,13 @@ import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import PhoneReminder from "@/app/components/PhoneReminder";
+import ReviewForm from "@/app/components/ReviewForm";
+import { getReviewableTenancies } from "@/lib/reviews";
+
+const fmtRange = (a: Date, b: Date | null) => {
+  const o = (d: Date) => new Date(d).toLocaleDateString("en-PH", { month: "short", year: "numeric" });
+  return `${o(a)} – ${b ? o(b) : "now"}`;
+};
 
 export const dynamic = "force-dynamic";
 
@@ -26,6 +33,9 @@ export default async function Dashboard() {
       orderBy: { createdAt: "desc" },
     }),
   ]);
+
+  // Past stays this user can review (as the tenant).
+  const pastStays = (await getReviewableTenancies(user.id)).filter((t) => t.asTenant);
 
   return (
     <>
@@ -94,6 +104,26 @@ export default async function Dashboard() {
             </table></div>
           )}
         </div>
+
+        {pastStays.length > 0 && (
+          <div className="card card-pad" style={{ marginBottom: 24 }}>
+            <h3 style={{ marginBottom: 4 }}>Your past stays</h3>
+            <p className="muted" style={{ fontSize: ".86rem", marginBottom: 16 }}>Share how it went — your review helps other renters.</p>
+            <div style={{ display: "grid", gap: 16 }}>
+              {pastStays.map((t) => (
+                <div key={t.id} style={{ borderTop: "1px solid var(--line)", paddingTop: 16 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", gap: 12, flexWrap: "wrap", marginBottom: 10 }}>
+                    <div>
+                      <a href={`/rentals/${t.listing.id}`}><strong style={{ color: "var(--leaf)" }}>{t.listing.title}</strong></a>
+                      <div className="muted" style={{ fontSize: ".8rem" }}>{t.listing.city} · {fmtRange(t.startedAt, t.endedAt)}</div>
+                    </div>
+                  </div>
+                  <ReviewForm tenancyId={t.id} asTenant={true} counterpartyName={t.counterpartyName} existing={t.existing} />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         <div className="card card-pad">
           <h3 style={{ marginBottom: 14 }}>My inquiries</h3>

@@ -1,5 +1,6 @@
 import { photoSrc } from "@/lib/photo";
 import SaveButton from "@/app/components/SaveButton";
+import Stars from "@/app/components/Stars";
 
 const peso = (n: number) => "₱" + n.toLocaleString("en-PH");
 
@@ -21,6 +22,8 @@ export type CardListing = {
   floorArea: number | string | null;
   verificationStatus: string;
   ownerVerified?: boolean;
+  rating?: number;
+  reviewCount?: number;
   photos: { photoUrl: string }[];
 };
 
@@ -55,7 +58,15 @@ export default function ListingCard({
       </div>
       <div className="info">
         <h3>{l.title}</h3>
-        <div className="loc">{l.city} · {l.barangay}</div>
+        <div className="loc" style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+          <span>{l.city} · {l.barangay}</span>
+          {l.reviewCount ? (
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
+              <Stars value={l.rating ?? 0} size={13} />
+              <small style={{ color: "var(--muted)" }}>{(l.rating ?? 0).toFixed(1)} ({l.reviewCount})</small>
+            </span>
+          ) : null}
+        </div>
         <div className="specs">
           <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 12h18M5 12V7a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v5M3 12v6M21 12v6" /></svg>{l.bedrooms} br</span>
           <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 12V6a2 2 0 0 1 4 0M3 12h18v3a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4z" /></svg>{l.bathrooms} ba</span>

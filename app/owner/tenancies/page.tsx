@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import ReviewForm from "@/app/components/ReviewForm";
 
 export const dynamic = "force-dynamic";
 
@@ -32,6 +33,7 @@ export default async function TenancyHistory() {
     include: {
       listing: { select: { id: true, title: true, city: true, barangay: true } },
       tenant: { select: { fullName: true, email: true } },
+      reviews: { where: { authorId: user.id }, select: { id: true, rating: true, body: true } },
     },
   });
 
@@ -52,7 +54,7 @@ export default async function TenancyHistory() {
           ) : (
             <div className="table-scroll"><table className="table">
               <thead>
-                <tr><th>Property</th><th>Tenant</th><th>Period</th><th>Duration</th><th>Agreed term</th><th>Status</th><th>Reason</th></tr>
+                <tr><th>Property</th><th>Tenant</th><th>Period</th><th>Duration</th><th>Agreed term</th><th>Status</th><th>Reason</th><th>Your review</th></tr>
               </thead>
               <tbody>
                 {tenancies.map((t) => {
@@ -66,6 +68,11 @@ export default async function TenancyHistory() {
                       <td>{t.agreedLeaseMonths} mo</td>
                       <td><span className={`status ${s.cls}`}>{s.label}</span></td>
                       <td className="muted" style={{ fontSize: ".84rem" }}>{t.endReason || (t.status === "ACTIVE" ? "—" : "No reason given")}</td>
+                      <td style={{ minWidth: 180 }}>
+                        {t.status === "ACTIVE"
+                          ? <span className="muted" style={{ fontSize: ".8rem" }}>After it ends</span>
+                          : <ReviewForm tenancyId={t.id} asTenant={false} counterpartyName={t.tenant.fullName} existing={t.reviews[0] ?? null} />}
+                      </td>
                     </tr>
                   );
                 })}

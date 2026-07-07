@@ -6,6 +6,8 @@ import { startConversation } from "@/app/messages/actions";
 import { photoSrc } from "@/lib/photo";
 import PhotoGallery from "@/app/components/PhotoGallery";
 import ReportButton from "@/app/components/ReportButton";
+import Stars from "@/app/components/Stars";
+import { listingRating, getListingReviews, userRating } from "@/lib/reviews";
 
 export const dynamic = "force-dynamic";
 
@@ -69,6 +71,13 @@ export default async function ListingDetail({ params }: { params: Promise<{ id: 
 
   const verifiedOwner = l.owner.verificationStatus === "VERIFIED";
 
+  const [rating, reviews, keyholderRating] = await Promise.all([
+    listingRating(l.id),
+    getListingReviews(l.id),
+    userRating(l.ownerId, true),
+  ]);
+  const fmtDate = (d: Date) => new Date(d).toLocaleDateString("en-PH", { year: "numeric", month: "short" });
+
   return (
     <>
 
@@ -81,6 +90,13 @@ export default async function ListingDetail({ params }: { params: Promise<{ id: 
           {occupied && <span className="status suspended" style={{ fontSize: ".82rem" }}>Occupied</span>}
         </div>
         <p style={{ marginTop: 6 }}>{TYPE_LABEL[l.propertyType]} · {l.city} · {l.barangay}</p>
+        {rating.count > 0 && (
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 8 }}>
+            <Stars value={rating.avg} size={16} />
+            <strong>{rating.avg.toFixed(1)}</strong>
+            <a href="#reviews" className="muted" style={{ fontSize: ".88rem" }}>{rating.count} review{rating.count === 1 ? "" : "s"}</a>
+          </div>
+        )}
       </div>
 
       {/* photos */}
@@ -134,6 +150,44 @@ export default async function ListingDetail({ params }: { params: Promise<{ id: 
                 <div className="amenities">{l.houseRules.map((r) => <span key={r}>{r}</span>)}</div>
               </div>
             )}
+
+            <div id="reviews" className="card card-pad" style={{ marginBottom: 20, scrollMarginTop: 80 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16, flexWrap: "wrap" }}>
+                <h3>Reviews</h3>
+                {rating.count > 0 && (
+                  <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                    <Stars value={rating.avg} size={15} />
+                    <span className="muted" style={{ fontSize: ".9rem" }}>{rating.avg.toFixed(1)} · {rating.count} review{rating.count === 1 ? "" : "s"}</span>
+                  </span>
+                )}
+              </div>
+              {reviews.length === 0 ? (
+                <p className="muted" style={{ fontSize: ".9rem" }}>No reviews yet. Reviews come from tenants after a completed stay.</p>
+              ) : (
+                <div style={{ display: "grid", gap: 18 }}>
+                  {reviews.map((r) => (
+                    <div key={r.id} style={{ display: "flex", gap: 12 }}>
+                      <div className="avatar" style={{ width: 40, height: 40, flexShrink: 0, overflow: "hidden" }}>
+                        {r.author.profilePhotoUrl ? (
+                          <img src={r.author.profilePhotoUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                        ) : (
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="8" r="4" /><path d="M5 20a7 7 0 0 1 14 0" /></svg>
+                        )}
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                          <strong style={{ fontSize: ".92rem" }}>{r.author.fullName}</strong>
+                          <Stars value={r.rating} size={13} />
+                          <span className="muted" style={{ fontSize: ".78rem" }}>· {fmtDate(r.createdAt)}</span>
+                        </div>
+                        {r.tenancy && <div className="muted" style={{ fontSize: ".76rem", marginTop: 2 }}>Stayed {r.tenancy.agreedLeaseMonths} mo</div>}
+                        {r.body && <p className="muted" style={{ fontSize: ".9rem", marginTop: 6, lineHeight: 1.55 }}>{r.body}</p>}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
 
           {/* right: price + actions */}
@@ -178,6 +232,12 @@ export default async function ListingDetail({ params }: { params: Promise<{ id: 
               <p className="muted" style={{ fontSize: ".8rem", marginTop: 14, textAlign: "center" }}>
                 Listed by {l.owner.fullName}{verifiedOwner ? " · Verified user" : ""}
               </p>
+              {keyholderRating.count > 0 && (
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, marginTop: 4 }}>
+                  <Stars value={keyholderRating.avg} size={13} />
+                  <span className="muted" style={{ fontSize: ".78rem" }}>{keyholderRating.avg.toFixed(1)} as a keyholder ({keyholderRating.count})</span>
+                </div>
+              )}
 
               <details className="contact-reveal">
                 <summary>
