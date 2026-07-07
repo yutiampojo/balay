@@ -30,6 +30,7 @@ export type PublicListing = {
   bathrooms: number;
   floorArea: number | null;
   verificationStatus: string;
+  ownerVerified: boolean;
   latitude: number | null;
   longitude: number | null;
   photos: { photoUrl: string }[];
@@ -50,7 +51,7 @@ export function buildListingWhere(filters: ListingFilters = {}): Prisma.ListingW
       : {}),
     ...(filters.minLease ? { minimumLeaseMonths: { gte: filters.minLease } } : {}),
     ...(filters.amenities && filters.amenities.length ? { amenities: { hasEvery: filters.amenities } } : {}),
-    ...(filters.verifiedOnly ? { verificationStatus: "VERIFIED" } : {}),
+    ...(filters.verifiedOnly ? { owner: { is: { verificationStatus: "VERIFIED" } } } : {}),
     ...(q
       ? {
           OR: [
@@ -85,11 +86,13 @@ export function getPublishedListings(filters: ListingFilters = {}): Promise<Publ
           id: true, title: true, propertyType: true, city: true, barangay: true,
           monthlyRent: true, minimumLeaseMonths: true, bedrooms: true, bathrooms: true,
           floorArea: true, verificationStatus: true, latitude: true, longitude: true,
+          owner: { select: { verificationStatus: true } },
           photos: { select: { photoUrl: true }, orderBy: { sortOrder: "asc" }, take: 1 },
         },
       });
-      return rows.map((l) => ({
+      return rows.map(({ owner, ...l }) => ({
         ...l,
+        ownerVerified: owner.verificationStatus === "VERIFIED",
         monthlyRent: Number(l.monthlyRent),
         floorArea: l.floorArea ? Number(l.floorArea) : null,
       }));

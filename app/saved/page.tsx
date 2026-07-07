@@ -18,6 +18,7 @@ export default async function SavedPage() {
           id: true, title: true, propertyType: true, city: true, barangay: true,
           monthlyRent: true, minimumLeaseMonths: true, bedrooms: true, bathrooms: true,
           floorArea: true, verificationStatus: true, listingStatus: true,
+          owner: { select: { verificationStatus: true } },
           photos: { select: { photoUrl: true }, orderBy: { sortOrder: "asc" }, take: 1 },
           tenancies: { where: { status: "ACTIVE" }, select: { id: true }, take: 1 },
         },
@@ -48,7 +49,7 @@ export default async function SavedPage() {
                 <div key={l.id} className={`saved-item${unavailable ? " unavailable" : ""}`}>
                   {unavailable && <span className="saved-ribbon">No longer available</span>}
                   <ListingCard
-                    l={{ ...l, monthlyRent: Number(l.monthlyRent), floorArea: l.floorArea ? Number(l.floorArea) : null }}
+                    l={{ ...l, ownerVerified: l.owner.verificationStatus === "VERIFIED", monthlyRent: Number(l.monthlyRent), floorArea: l.floorArea ? Number(l.floorArea) : null }}
                     saved
                     savePath="/saved"
                   />

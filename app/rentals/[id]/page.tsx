@@ -68,7 +68,6 @@ export default async function ListingDetail({ params }: { params: Promise<{ id: 
   if (occupied && !(isOwnListing || isAcceptedApplicant || isAdmin)) notFound();
 
   const verifiedOwner = l.owner.verificationStatus === "VERIFIED";
-  const verifiedUnit = l.verificationStatus === "VERIFIED";
 
   return (
     <>
@@ -98,9 +97,9 @@ export default async function ListingDetail({ params }: { params: Promise<{ id: 
           {/* left: details */}
           <div>
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 20 }}>
-              {verifiedOwner && <span className="vbadge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M20 6 9 17l-5-5" /></svg>Verified owner</span>}
-              {verifiedUnit && <span className="vbadge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M20 6 9 17l-5-5" /></svg>Verified unit</span>}
-              {!verifiedOwner && !verifiedUnit && <span className="vbadge plain">Documents pending</span>}
+              {verifiedOwner
+                ? <span className="vbadge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M20 6 9 17l-5-5" /></svg>Verified user</span>
+                : <span className="vbadge plain">Unverified user</span>}
             </div>
 
             <div className="card card-pad" style={{ marginBottom: 20 }}>
@@ -177,7 +176,7 @@ export default async function ListingDetail({ params }: { params: Promise<{ id: 
                 </>
               )}
               <p className="muted" style={{ fontSize: ".8rem", marginTop: 14, textAlign: "center" }}>
-                Listed by {l.owner.fullName}{verifiedOwner ? " · Verified" : ""}
+                Listed by {l.owner.fullName}{verifiedOwner ? " · Verified user" : ""}
               </p>
 
               <details className="contact-reveal">

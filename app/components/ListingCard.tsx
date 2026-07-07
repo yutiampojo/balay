@@ -20,6 +20,7 @@ export type CardListing = {
   bathrooms: number;
   floorArea: number | string | null;
   verificationStatus: string;
+  ownerVerified?: boolean;
   photos: { photoUrl: string }[];
 };
 
@@ -32,7 +33,7 @@ export default function ListingCard({
   saved?: boolean; // when defined, render the save heart (with this state)
   savePath?: string; // path to revalidate after toggling
 }) {
-  const verified = l.verificationStatus === "VERIFIED";
+  const verified = l.ownerVerified === true;
   const photo = l.photos[0]?.photoUrl;
   const card = (
     <a className="listing" href={`/rentals/${l.id}`} target="_blank" rel="noopener noreferrer">
@@ -48,13 +49,11 @@ export default function ListingCard({
         <span className="typepill">{TYPE_LABEL[l.propertyType]}</span>
       </div>
       <div className="info">
-        <div className="badges">
-          {verified ? (
-            <span className="vbadge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M20 6 9 17l-5-5" /></svg>Verified</span>
-          ) : (
-            <span className="vbadge plain">Documents pending</span>
-          )}
-        </div>
+        {verified && (
+          <div className="badges">
+            <span className="vbadge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M20 6 9 17l-5-5" /></svg>Verified user</span>
+          </div>
+        )}
         <h3>{l.title}</h3>
         <div className="loc">{l.city} · {l.barangay}</div>
         <div className="specs">
