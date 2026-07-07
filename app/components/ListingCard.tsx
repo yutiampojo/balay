@@ -47,13 +47,15 @@ export default function ListingCard({
         }}
       >
         <span className="typepill">{TYPE_LABEL[l.propertyType]}</span>
+        {verified && (
+          <span className="vcheck" style={saved !== undefined ? { right: 52 } : undefined} title="Verified user" aria-label="Listing from a verified user">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M20 6 9 17l-5-5" /></svg>
+          </span>
+        )}
       </div>
       <div className="info">
         <h3>{l.title}</h3>
-        <div className="loc-row">
-          <span className="loc">{l.city} · {l.barangay}</span>
-          {verified && <span className="vbadge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M20 6 9 17l-5-5" /></svg>Verified user</span>}
-        </div>
+        <div className="loc">{l.city} · {l.barangay}</div>
         <div className="specs">
           <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 12h18M5 12V7a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v5M3 12v6M21 12v6" /></svg>{l.bedrooms} br</span>
           <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 12V6a2 2 0 0 1 4 0M3 12h18v3a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4z" /></svg>{l.bathrooms} ba</span>

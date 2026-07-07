@@ -276,9 +276,9 @@ footer .disclaimer{font-size:.8rem;color:var(--muted);line-height:1.6;max-width:
 .listing .info{padding:15px 17px 17px;display:flex;flex-direction:column;flex:1}
 .listing .badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
 .listing h3{font-size:1.06rem;font-weight:600;color:var(--ink)}
-.listing .loc-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:3px}
-.listing .loc-row .loc{margin-top:0}
-.listing .loc-row .vbadge{flex:0 0 auto;white-space:nowrap}
+/* gold verified check on the photo, sitting beside the save heart */
+.listing .vcheck{position:absolute;top:10px;right:10px;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--gold-soft);border:1.5px solid var(--gold);color:var(--gold);box-shadow:var(--shadow-sm)}
+.listing .vcheck svg{width:16px;height:16px}
 .listing .loc{font-size:.84rem;color:var(--muted);margin-top:3px}
 .listing .specs{display:flex;gap:14px;margin-top:10px;font-size:.82rem;color:var(--muted)}
 .listing .foot{margin-top:auto;padding-top:14px;display:flex;align-items:flex-end;justify-content:space-between;border-top:1px solid var(--line);margin-top:14px}
