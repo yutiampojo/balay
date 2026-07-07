@@ -276,6 +276,9 @@ footer .disclaimer{font-size:.8rem;color:var(--muted);line-height:1.6;max-width:
 .listing .info{padding:15px 17px 17px;display:flex;flex-direction:column;flex:1}
 .listing .badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
 .listing h3{font-size:1.06rem;font-weight:600;color:var(--ink)}
+.listing .info-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.listing .info-head h3{flex:1;min-width:0}
+.listing .info-head .vbadge{flex:0 0 auto;white-space:nowrap;margin-top:1px}
 .listing .loc{font-size:.84rem;color:var(--muted);margin-top:3px}
 .listing .specs{display:flex;gap:14px;margin-top:10px;font-size:.82rem;color:var(--muted)}
 .listing .foot{margin-top:auto;padding-top:14px;display:flex;align-items:flex-end;justify-content:space-between;border-top:1px solid var(--line);margin-top:14px}

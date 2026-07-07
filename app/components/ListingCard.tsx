@@ -49,12 +49,10 @@ export default function ListingCard({
         <span className="typepill">{TYPE_LABEL[l.propertyType]}</span>
       </div>
       <div className="info">
-        {verified && (
-          <div className="badges">
-            <span className="vbadge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M20 6 9 17l-5-5" /></svg>Verified user</span>
-          </div>
-        )}
-        <h3>{l.title}</h3>
+        <div className="info-head">
+          <h3>{l.title}</h3>
+          {verified && <span className="vbadge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M20 6 9 17l-5-5" /></svg>Verified user</span>}
+        </div>
         <div className="loc">{l.city} · {l.barangay}</div>
         <div className="specs">
           <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 12h18M5 12V7a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v5M3 12v6M21 12v6" /></svg>{l.bedrooms} br</span>
