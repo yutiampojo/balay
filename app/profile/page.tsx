@@ -3,6 +3,7 @@ import { getCurrentUser } from "@/lib/auth";
 import PhoneForm from "./PhoneForm";
 import AvatarUpload from "./AvatarUpload";
 import DeleteUserButton from "@/app/components/DeleteUserButton";
+import VerificationCard from "./VerificationCard";
 import { phoneStatus, daysUntilExpiry } from "@/lib/phone";
 
 const initialsOf = (name: string) => name.split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase();
@@ -59,6 +60,9 @@ export default async function ProfilePage() {
           </div>
           <p className="muted" style={{ fontSize: ".8rem", marginTop: 12 }}>Your email is managed through your login and can&apos;t be changed here.</p>
         </div>
+
+        {/* identity verification */}
+        <VerificationCard status={user.verificationStatus} userId={user.id} />
 
         {/* contact number */}
         <div className="card card-pad">

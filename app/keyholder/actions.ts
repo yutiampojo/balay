@@ -30,13 +30,9 @@ export async function becomeHost(formData: FormData) {
     where: { id: user.id },
     data: {
       role: user.role === "ADMIN" ? "ADMIN" : "OWNER", // don't downgrade admins
-      verificationStatus: "VERIFIED",
-      ownerProfile: {
-        upsert: {
-          create: { verificationStatus: "VERIFIED" },
-          update: { verificationStatus: "VERIFIED" },
-        },
-      },
+      // Identity is NOT auto-verified — the user must submit a government ID
+      // from their profile, which an admin reviews. (Verify via /profile.)
+      ownerProfile: { upsert: { create: {}, update: {} } },
     },
   });
 

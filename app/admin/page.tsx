@@ -5,6 +5,7 @@ import { moderateListing, updateReport } from "./actions";
 import ActiveListings from "./ActiveListings";
 import AdminTabs from "./AdminTabs";
 import UsersTable from "./UsersTable";
+import VerificationQueue from "./VerificationQueue";
 
 export const dynamic = "force-dynamic";
 
@@ -16,14 +17,28 @@ export default async function AdminConsole() {
   if (!user) redirect("/login?next=/admin");
   if (user.role !== "ADMIN") redirect("/dashboard");
 
-  const [pendingListings, activeListings, reports, users, audit, counts] = await Promise.all([
+  const [pendingListings, activeListings, reports, users, audit, counts, pendingVerifications] = await Promise.all([
     prisma.listing.findMany({ where: { listingStatus: "PENDING_REVIEW" }, orderBy: { createdAt: "desc" }, include: { owner: { select: { fullName: true } } } }),
     prisma.listing.findMany({ where: { listingStatus: "PUBLISHED" }, orderBy: { createdAt: "desc" }, include: { owner: { select: { fullName: true } } } }),
     prisma.report.findMany({ orderBy: [{ status: "asc" }, { createdAt: "desc" }], include: { listing: { select: { id: true, title: true } }, reporter: { select: { fullName: true } }, reportedUser: { select: { fullName: true } } } }),
     prisma.user.findMany({ orderBy: { createdAt: "desc" } }),
     prisma.auditLog.findMany({ orderBy: { createdAt: "desc" }, take: 10, include: { admin: { select: { fullName: true } } } }),
     prisma.listing.count({ where: { listingStatus: "PUBLISHED" } }),
+    prisma.user.findMany({
+      where: { verificationStatus: "PENDING" },
+      orderBy: { updatedAt: "desc" },
+      select: { id: true, fullName: true, email: true, role: true, documents: { where: { type: "GOVERNMENT_ID" }, orderBy: { createdAt: "desc" }, take: 1, select: { createdAt: true } } },
+    }),
   ]);
+
+  const pendingVerifs = pendingVerifications.map((u) => ({
+    id: u.id,
+    fullName: u.fullName,
+    email: u.email,
+    role: u.role,
+    hasDoc: u.documents.length > 0,
+    submittedAt: u.documents[0] ? new Date(u.documents[0].createdAt).toLocaleDateString("en-PH") : null,
+  }));
 
   return (
     <>
@@ -146,6 +161,17 @@ export default async function AdminConsole() {
                       </tbody>
                     </table></div>
                   )}
+                </div>
+              ),
+            },
+            {
+              key: "verifications",
+              label: "Verifications",
+              badge: pendingVerifs.length || undefined,
+              content: (
+                <div className="card card-pad">
+                  <h3 style={{ marginBottom: 14 }}>Identity verifications</h3>
+                  <VerificationQueue pending={pendingVerifs} />
                 </div>
               ),
             },
