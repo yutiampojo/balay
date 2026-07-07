@@ -87,7 +87,7 @@ export default function SaveButton({ listingId, saved, next = "/rentals" }: { li
   }
 
   return (
-    <div className="save-form">
+    <div className="save-form" style={open ? { zIndex: 250 } : undefined}>
       <button
         type="button"
         className={`save-btn${isSaved ? " saved" : ""}`}
