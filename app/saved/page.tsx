@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { photoSrc } from "@/lib/photo";
+import CollectionCard from "./CollectionCard";
 
 export const dynamic = "force-dynamic";
 
@@ -29,7 +30,8 @@ export default async function SavedPage() {
     }),
   ]);
 
-  const cards = collections.map((c) => ({
+  const cards: { collectionId?: string; href: string; name: string; count: number; cover: string | null }[] = collections.map((c) => ({
+    collectionId: c.id,
     href: `/saved/${c.id}`,
     name: c.name,
     count: c._count.savedListings,
@@ -62,12 +64,7 @@ export default async function SavedPage() {
         ) : (
           <div className="wishlist-grid">
             {cards.map((c) => (
-              <a key={c.href} className="wishlist-card" href={c.href}>
-                <div className="wishlist-cover" style={c.cover ? { backgroundImage: `url('${c.cover}')` } : undefined}>
-                  {!c.cover && <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M3 11l9-7 9 7M5 10v10h14V10" /></svg>}
-                </div>
-                <div className="wishlist-meta"><strong>{c.name}</strong><span className="muted">{c.count} saved</span></div>
-              </a>
+              <CollectionCard key={c.href} href={c.href} name={c.name} count={c.count} cover={c.cover} collectionId={c.collectionId} />
             ))}
           </div>
         )}

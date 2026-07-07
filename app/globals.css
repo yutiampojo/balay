@@ -679,8 +679,12 @@ footer .disclaimer{font-size:.8rem;color:var(--muted);line-height:1.6;max-width:
 /* saved page: collection covers (wishlists) */
 .wishlist-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;margin-top:20px}
 .wishlist-cover{aspect-ratio:1;border-radius:var(--r-card);border:1px solid var(--line);background:var(--mist);background-size:cover;background-position:center;display:flex;align-items:center;justify-content:center;color:var(--muted);transition:transform .2s ease,box-shadow .2s ease}
+.wishlist-card{position:relative}
 .wishlist-card:hover .wishlist-cover{transform:translateY(-3px);box-shadow:var(--shadow-md)}
-.wishlist-meta{margin-top:10px}
+.wishlist-del{position:absolute;top:10px;left:10px;width:30px;height:30px;border-radius:50%;border:1px solid var(--line);background:rgba(255,255,255,.9);color:var(--ink);display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;transition:opacity .15s ease,background .15s,color .15s,border-color .15s;z-index:2}
+.wishlist-card:hover .wishlist-del,.wishlist-del:focus-visible{opacity:.92}
+.wishlist-del:hover{opacity:1;background:#fff;border-color:var(--danger);color:var(--danger)}
+.wishlist-meta{display:block;margin-top:10px}
 .wishlist-meta strong{display:block;color:var(--ink);font-size:1rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .wishlist-meta .muted{font-size:.85rem}
 @media(max-width:900px){.wishlist-grid{grid-template-columns:repeat(3,1fr)}}
