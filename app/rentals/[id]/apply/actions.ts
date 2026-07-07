@@ -19,13 +19,18 @@ export async function submitApplication(formData: FormData) {
   const taken = await prisma.tenancy.findFirst({ where: { listingId, status: "ACTIVE" }, select: { id: true } });
   if (taken) redirect(`/rentals/${listingId}`); // unit is occupied
 
-  const tenantType = (String(formData.get("tenantType") || "OTHER") as TenantType) || TenantType.OTHER;
-  const employmentStatus = String(formData.get("employmentStatus") || "");
-  const incomeRange = String(formData.get("incomeRange") || "");
-  const message = String(formData.get("message") || "");
+  const ttRaw = String(formData.get("tenantType") || "");
+  const tenantType: TenantType = (Object.values(TenantType) as string[]).includes(ttRaw) ? (ttRaw as TenantType) : TenantType.OTHER;
+  const employmentStatus = String(formData.get("employmentStatus") || "").slice(0, 100);
+  const incomeRange = String(formData.get("incomeRange") || "").slice(0, 100);
+  const message = String(formData.get("message") || "").slice(0, 3000);
   const moveIn = String(formData.get("moveIn") || "");
-  const leaseMonths = Number(formData.get("leaseMonths") || 0);
-  const occupants = Number(formData.get("occupants") || 1);
+  const clampInt = (v: FormDataEntryValue | null, min: number, max: number) => {
+    const n = Math.floor(Number(v));
+    return Number.isFinite(n) ? Math.min(max, Math.max(min, n)) : min;
+  };
+  const leaseMonths = clampInt(formData.get("leaseMonths"), 0, 120);
+  const occupants = clampInt(formData.get("occupants"), 1, 50);
 
   // Application (one per tenant per listing)
   await prisma.application.upsert({

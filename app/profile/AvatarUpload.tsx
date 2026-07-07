@@ -50,7 +50,7 @@ export default function AvatarUpload({ currentUrl, initials }: { currentUrl: str
         <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
           <label className="btn btn-ghost btn-sm" style={{ cursor: "pointer" }}>
             {busy ? "Uploading…" : url ? "Change photo" : "Upload photo"}
-            <input type="file" accept="image/*" hidden onChange={onFile} disabled={busy} />
+            <input type="file" accept="image/jpeg,image/png,image/webp" hidden onChange={onFile} disabled={busy} />
           </label>
           {url && <button className="btn btn-danger btn-sm" type="button" onClick={onRemove} disabled={busy}>Remove</button>}
         </div>

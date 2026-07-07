@@ -160,7 +160,7 @@ export default function ListingForm() {
         <label className="upload" style={{ display: "block" }}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M12 16V4m0 0L7 9m5-5 5 5" /><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" /></svg>
           <div>{uploading ? "Uploading…" : "Click to upload photos"}</div>
-          <input type="file" accept="image/*" multiple hidden onChange={handleFiles} disabled={uploading} />
+          <input type="file" accept="image/jpeg,image/png,image/webp" multiple hidden onChange={handleFiles} disabled={uploading} />
         </label>
         {uploadErr && <p className="muted" style={{ color: "var(--danger)", fontSize: ".84rem", marginTop: 8 }}>{uploadErr}</p>}
         {photos.length > 0 && (

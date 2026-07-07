@@ -13,7 +13,7 @@ export async function sendMessage(formData: FormData) {
   await rateLimit("message", user.id, 20, "1 m");
 
   const conversationId = String(formData.get("conversationId") || "");
-  const body = String(formData.get("body") || "").trim();
+  const body = String(formData.get("body") || "").trim().slice(0, 4000);
   if (!conversationId || !body) return;
 
   const convo = await prisma.conversation.findUnique({ where: { id: conversationId } });

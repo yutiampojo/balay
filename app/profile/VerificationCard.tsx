@@ -64,7 +64,7 @@ export default function VerificationCard({ status, userId }: { status: string; u
           {err && <div className="banner" style={{ background: "var(--danger-soft)", marginBottom: 12, fontSize: ".88rem" }}>{err}</div>}
           <label className="btn btn-primary" style={{ cursor: busy ? "default" : "pointer" }}>
             {busy ? <><span className="spinner" aria-hidden="true" />Uploading…</> : "Upload government ID"}
-            <input type="file" accept="image/*" hidden disabled={busy} onChange={onFile} />
+            <input type="file" accept="image/jpeg,image/png,image/webp" hidden disabled={busy} onChange={onFile} />
           </label>
         </>
       )}

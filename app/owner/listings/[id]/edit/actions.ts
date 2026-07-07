@@ -16,7 +16,7 @@ export async function updatePricing(formData: FormData) {
 
   const num = (k: string) => {
     const v = Number(formData.get(k));
-    return Number.isFinite(v) && v > 0 ? v : null;
+    return Number.isFinite(v) && v > 0 ? Math.min(v, 100_000_000) : null;
   };
   const monthlyRent = num("monthlyRent");
   if (!monthlyRent) redirect(`/owner/listings/${listingId}/edit`); // rent is required
