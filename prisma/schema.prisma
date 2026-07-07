@@ -179,6 +179,7 @@ model User {
   tenanciesAsOwner  Tenancy[] @relation("OwnerTenancies")
 
   savedListings SavedListing[] @relation("UserSavedListings")
+  collections   Collection[]   @relation("UserCollections")
 
   @@index([role])
   @@index([verificationStatus])
@@ -497,10 +498,26 @@ model SavedListing {
   user      User     @relation("UserSavedListings", fields: [userId], references: [id], onDelete: Cascade)
   listingId String
   listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  collectionId String?
+  collection   Collection? @relation(fields: [collectionId], references: [id], onDelete: SetNull)
   createdAt DateTime @default(now())
 
   @@unique([userId, listingId]) // save a listing at most once
   @@index([userId])
   @@index([listingId])
+  @@index([collectionId])
+}
+
+// A user's wishlist/board that saved listings can be grouped into.
+model Collection {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation("UserCollections", fields: [userId], references: [id], onDelete: Cascade)
+  name      String
+  createdAt DateTime @default(now())
+
+  savedListings SavedListing[]
+
+  @@index([userId])
 }
 

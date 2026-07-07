@@ -641,6 +641,38 @@ footer .disclaimer{font-size:.8rem;color:var(--muted);line-height:1.6;max-width:
 .save-btn svg{width:18px;height:18px}
 .save-btn:hover{transform:scale(1.08);background:#fff}
 .save-btn.saved{color:#d1345b}
+
+/* save-to-collection modal */
+.save-modal{position:relative;background:var(--card);border-radius:var(--r-card);box-shadow:var(--shadow-lg);width:100%;max-width:460px;max-height:88vh;overflow-y:auto;padding:22px 22px 20px;animation:report-in .18s ease}
+.save-modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.save-modal-head h3{font-size:1.2rem;font-weight:700;color:var(--ink)}
+.save-modal-x{background:none;border:none;font-size:1.05rem;color:var(--muted);cursor:pointer;width:30px;height:30px;border-radius:50%;line-height:1}
+.save-modal-x:hover{background:var(--mist);color:var(--ink)}
+.coll-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.coll-sq{background:none;border:none;padding:0;cursor:pointer;text-align:left;display:flex;flex-direction:column;gap:6px;font-family:inherit}
+.coll-sq:disabled{opacity:.55;cursor:default}
+.coll-thumb{position:relative;aspect-ratio:1;border-radius:14px;border:1.5px solid var(--line);background:var(--mist);background-size:cover;background-position:center;display:flex;align-items:center;justify-content:center;color:var(--muted);transition:border-color .15s,transform .15s,box-shadow .15s}
+.coll-sq:not(:disabled):hover .coll-thumb{border-color:var(--pine);transform:translateY(-1px)}
+.coll-sq.active .coll-thumb{border-color:var(--pine);box-shadow:0 0 0 2px var(--pine)}
+.coll-check{position:absolute;top:6px;right:6px;width:22px;height:22px;border-radius:50%;background:var(--pine);color:#fff;font-size:.78rem;display:flex;align-items:center;justify-content:center}
+.coll-plus{border-style:dashed;color:var(--pine)}
+.coll-name{font-size:.86rem;font-weight:600;color:var(--ink);line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.coll-count{font-size:.75rem;color:var(--muted)}
+.coll-form{gap:6px}
+.coll-form .input{font-size:.85rem;padding:.5rem .6rem}
+.save-remove{margin-top:16px;width:100%;background:none;border:1px solid var(--danger-soft);color:var(--danger);padding:.6rem;border-radius:var(--r-pill);font-weight:600;cursor:pointer;font-family:inherit;transition:background .15s}
+.save-remove:hover{background:var(--danger-soft)}
+@media(max-width:480px){.coll-grid{grid-template-columns:repeat(2,1fr)}}
+
+/* saved page: collection covers (wishlists) */
+.wishlist-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;margin-top:20px}
+.wishlist-cover{aspect-ratio:1;border-radius:var(--r-card);border:1px solid var(--line);background:var(--mist);background-size:cover;background-position:center;display:flex;align-items:center;justify-content:center;color:var(--muted);transition:transform .2s ease,box-shadow .2s ease}
+.wishlist-card:hover .wishlist-cover{transform:translateY(-3px);box-shadow:var(--shadow-md)}
+.wishlist-meta{margin-top:10px}
+.wishlist-meta strong{display:block;color:var(--ink);font-size:1rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wishlist-meta .muted{font-size:.85rem}
+@media(max-width:900px){.wishlist-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:680px){.wishlist-grid{grid-template-columns:repeat(2,1fr);gap:16px}}
 .save-btn.saved:hover{color:#b82a4c}
 
 /* saved-home cards + unavailable ribbon */

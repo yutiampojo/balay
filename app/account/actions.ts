@@ -41,6 +41,7 @@ export async function deleteUserAccount(targetUserId: string) {
     // misc user-owned rows
     prisma.document.deleteMany({ where: { ownerUserId: uid } }),
     prisma.savedListing.deleteMany({ where: { userId: uid } }),
+    prisma.collection.deleteMany({ where: { userId: uid } }),
     prisma.ownerProfile.deleteMany({ where: { userId: uid } }),
     prisma.tenantProfile.deleteMany({ where: { userId: uid } }),
     // finally, the user
