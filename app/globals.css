@@ -662,6 +662,18 @@ footer .disclaimer{font-size:.8rem;color:var(--muted);line-height:1.6;max-width:
 .coll-form .input{font-size:.85rem;padding:.5rem .6rem}
 .save-remove{margin-top:16px;width:100%;background:none;border:1px solid var(--danger-soft);color:var(--danger);padding:.6rem;border-radius:var(--r-pill);font-weight:600;cursor:pointer;font-family:inherit;transition:background .15s}
 .save-remove:hover{background:var(--danger-soft)}
+.save-modal-back{background:none;border:none;color:var(--ink);cursor:pointer;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-right:2px}
+.save-modal-back:hover{background:var(--mist)}
+.create-coll{padding:6px 0 2px}
+.create-coll .field-group span{font-size:.78rem;font-weight:600;color:var(--muted);letter-spacing:.02em}
+.create-coll-foot{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+/* bottom-left "Saved to …" toast */
+.save-toast{position:fixed;bottom:20px;left:20px;z-index:400;display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow-lg);padding:12px 16px;min-width:260px;max-width:360px;animation:report-in .22s ease}
+.save-toast .st-check{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:var(--pine);color:#fff;display:flex;align-items:center;justify-content:center}
+.save-toast .st-text{font-size:.92rem;color:var(--ink)}
+.save-toast .st-change{margin-left:auto;background:none;border:none;font-weight:600;color:var(--ink);text-decoration:underline;cursor:pointer;font-family:inherit;flex:0 0 auto}
+.save-toast .st-change:hover{color:var(--leaf)}
+@media(max-width:560px){.save-toast{left:12px;right:12px;bottom:12px;max-width:none}}
 @media(max-width:480px){.coll-grid{grid-template-columns:repeat(2,1fr)}}
 
 /* saved page: collection covers (wishlists) */
