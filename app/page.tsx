@@ -31,7 +31,7 @@ export default async function Home() {
             <div>
               <p className="eyebrow">Balaymo · Move light. Live easy.</p>
               <h1>Find a place you can&nbsp;actually <em>settle into.</em></h1>
-              <p className="lede">Verified homes for 3 months and up — condos, apartments, rooms and houses, priced by the month. No nightly stays, no surprises.</p>
+              <p className="lede">Cozy, verified homes for 3 months and up — condos, apartments, rooms and houses, priced by the month. No nightly stays, no surprises.</p>
 
               <form className="searchcard" action="/rentals" method="get" aria-label="Search rentals">
                 <div className="searchrow">
