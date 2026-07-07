@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { rateLimit } from "@/lib/ratelimit";
 import { ReportReason } from "@prisma/client";
 
 export type ReportState = { status: "idle" | "ok" | "error"; message?: string };
@@ -14,6 +15,11 @@ const VALID_REASONS = new Set<string>(Object.values(ReportReason));
 export async function submitReport(_prev: ReportState, formData: FormData): Promise<ReportState> {
   const user = await getCurrentUser();
   if (!user) return { status: "error", message: "Please log in to submit a report." };
+  try {
+    await rateLimit("report", user.id, 8, "1 h");
+  } catch {
+    return { status: "error", message: "You're reporting too quickly. Please wait a moment." };
+  }
 
   const reason = String(formData.get("reason") || "");
   if (!VALID_REASONS.has(reason)) return { status: "error", message: "Please choose a reason." };

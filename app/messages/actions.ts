@@ -4,11 +4,13 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { rateLimit } from "@/lib/ratelimit";
 
 // Send a message in a conversation the current user is part of.
 export async function sendMessage(formData: FormData) {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
+  await rateLimit("message", user.id, 20, "1 m");
 
   const conversationId = String(formData.get("conversationId") || "");
   const body = String(formData.get("body") || "").trim();
@@ -51,6 +53,7 @@ export async function markConversationRead(conversationId: string) {
 export async function startConversation(formData: FormData) {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
+  await rateLimit("inquiry", user.id, 12, "1 m");
 
   const listingId = String(formData.get("listingId") || "");
   const listing = await prisma.listing.findUnique({ where: { id: listingId }, select: { ownerId: true } });

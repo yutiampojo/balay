@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { photoSrc } from "@/lib/photo";
+import { rateLimit } from "@/lib/ratelimit";
 
 export type CollectionCard = { id: string; name: string; count: number; cover: string | null };
 
@@ -70,6 +71,7 @@ export async function saveToCollection(listingId: string, collectionId: string |
 export async function createCollectionAndSave(name: string, listingId: string) {
   const user = await getCurrentUser();
   if (!user) throw new Error("Please sign in to save.");
+  await rateLimit("collection", user.id, 30, "1 m");
   const trimmed = name.trim().slice(0, 60);
   if (!trimmed) throw new Error("Please name your collection.");
   const listing = await prisma.listing.findUnique({ where: { id: listingId }, select: { id: true } });

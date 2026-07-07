@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+import { rateLimit } from "@/lib/ratelimit";
 import { createAdminClient, VERIFICATION_BUCKET } from "@/lib/supabase/admin";
 
 async function requireAdmin() {
@@ -17,6 +18,7 @@ export async function submitVerification(docPath: string) {
   const user = await getCurrentUser();
   if (!user) throw new Error("You must be signed in.");
   if (!docPath) throw new Error("No document uploaded.");
+  await rateLimit("verify", user.id, 5, "1 h");
 
   await prisma.$transaction([
     prisma.document.create({

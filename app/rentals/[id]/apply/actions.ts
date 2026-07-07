@@ -3,11 +3,13 @@
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { rateLimit } from "@/lib/ratelimit";
 import { TenantType } from "@prisma/client";
 
 export async function submitApplication(formData: FormData) {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
+  await rateLimit("apply", user.id, 8, "1 m");
 
   const listingId = String(formData.get("listingId") || "");
   const listing = await prisma.listing.findUnique({ where: { id: listingId }, select: { ownerId: true } });
