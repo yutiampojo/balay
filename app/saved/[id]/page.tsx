@@ -2,6 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import ListingCard from "@/app/components/ListingCard";
+import DeleteCollectionButton from "../DeleteCollectionButton";
 
 export const dynamic = "force-dynamic";
 
@@ -39,7 +40,10 @@ export default async function CollectionPage({ params }: { params: Promise<{ id:
     <>
       <div className="wrap pagehead">
         <div className="crumbs"><a href="/saved">Saved</a> <span>›</span> <span>{name}</span></div>
-        <h1>{name}</h1>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
+          <h1>{name}</h1>
+          {!isUnsorted && <DeleteCollectionButton collectionId={id} name={name} count={saved.length} />}
+        </div>
         <p>{saved.length} home{saved.length === 1 ? "" : "s"} in this collection.</p>
       </div>
 

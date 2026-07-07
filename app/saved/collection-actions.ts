@@ -85,6 +85,20 @@ export async function createCollectionAndSave(name: string, listingId: string) {
   return col.id;
 }
 
+// Delete a collection and the listings saved in it.
+export async function deleteCollection(collectionId: string) {
+  const user = await getCurrentUser();
+  if (!user) throw new Error("Please sign in.");
+  const col = await prisma.collection.findFirst({ where: { id: collectionId, userId: user.id }, select: { id: true } });
+  if (!col) throw new Error("Collection not found.");
+  await prisma.$transaction([
+    prisma.savedListing.deleteMany({ where: { userId: user.id, collectionId } }),
+    prisma.collection.delete({ where: { id: collectionId } }),
+  ]);
+  revalidatePath("/saved");
+  revalidatePath("/rentals");
+}
+
 // Un-save a listing entirely.
 export async function removeSaved(listingId: string) {
   const user = await getCurrentUser();
