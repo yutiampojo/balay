@@ -18,6 +18,10 @@ export async function submitVerification(docPath: string) {
   const user = await getCurrentUser();
   if (!user) throw new Error("You must be signed in.");
   if (!docPath) throw new Error("No document uploaded.");
+  // The path must live in the caller's own folder — stops a user from
+  // referencing someone else's uploaded ID (admins view it via a
+  // service-role signed URL that bypasses bucket RLS).
+  if (!docPath.startsWith(`${user.id}/`)) throw new Error("Invalid document path.");
   await rateLimit("verify", user.id, 5, "1 h");
 
   await prisma.$transaction([
