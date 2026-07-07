@@ -32,7 +32,7 @@ export default function UsersTable({ users, currentUserId }: { users: Row[]; cur
         <h3>Users <span className="muted" style={{ fontWeight: 400, fontSize: ".9rem" }}>({rows.length})</span></h3>
         <div className="chat-search" style={{ margin: 0, maxWidth: 320, flex: "1 1 240px" }}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></svg>
-          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search by name, email, or role…" />
+          <input type="search" aria-label="Search users" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search by name, email, or role…" />
         </div>
       </div>
 

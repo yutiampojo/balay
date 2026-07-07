@@ -64,15 +64,15 @@ export default function LoginPage() {
 
           <form onSubmit={onSubmit}>
             <div className="field-group">
-              <label>Email</label>
-              <input className="input" type="email" placeholder="you@email.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
+              <label htmlFor="email">Email</label>
+              <input id="email" name="email" autoComplete="email" className="input" type="email" placeholder="you@email.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
             </div>
             <div className="field-group">
-              <label style={{ display: "flex", justifyContent: "space-between" }}>
+              <label htmlFor="password" style={{ display: "flex", justifyContent: "space-between" }}>
                 Password
                 <a href="/forgot-password" style={{ fontWeight: 500, color: "var(--leaf)" }}>Forgot?</a>
               </label>
-              <input className="input" type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required />
+              <input id="password" name="password" autoComplete="current-password" className="input" type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required />
             </div>
             <label className="checkrow" style={{ margin: "4px 0 18px" }}>
               <input type="checkbox" checked={keep} onChange={(e) => setKeep(e.target.checked)} />

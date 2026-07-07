@@ -63,6 +63,7 @@ export default function ChatThread({ conversationId, messages }: { conversationI
         <input type="hidden" name="conversationId" value={conversationId} />
         <textarea
           name="body"
+          aria-label="Message"
           rows={1}
           placeholder="Write a message…  (Enter to send, Shift+Enter for new line)"
           required

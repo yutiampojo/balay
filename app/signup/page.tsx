@@ -65,21 +65,21 @@ export default function SignupPage() {
 
           <form onSubmit={onSubmit}>
             <div className="field-group">
-              <label>Full name</label>
-              <input className="input" value={fullName} onChange={(e) => setFullName(e.target.value)} required />
+              <label htmlFor="fullName">Full name</label>
+              <input id="fullName" name="name" autoComplete="name" className="input" value={fullName} onChange={(e) => setFullName(e.target.value)} required />
             </div>
             <div className="field-group">
-              <label>Email</label>
-              <input className="input" type="email" placeholder="you@email.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
+              <label htmlFor="email">Email</label>
+              <input id="email" name="email" autoComplete="email" className="input" type="email" placeholder="you@email.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
             </div>
             <div className="field-group">
-              <label>Password</label>
-              <input className="input" type="password" placeholder="••••••••" minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} required />
+              <label htmlFor="password">Password</label>
+              <input id="password" name="password" autoComplete="new-password" className="input" type="password" placeholder="••••••••" minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} required />
               <span className="sub">At least 6 characters.</span>
             </div>
             <div className="field-group">
-              <label>I want to…</label>
-              <select className="select" value={role} onChange={(e) => setRole(e.target.value)}>
+              <label htmlFor="role">I want to…</label>
+              <select id="role" name="role" className="select" value={role} onChange={(e) => setRole(e.target.value)}>
                 <option value="TENANT">Rent a home (Tenant)</option>
                 <option value="OWNER">List my property (Owner)</option>
               </select>

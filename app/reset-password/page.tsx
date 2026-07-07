@@ -95,12 +95,12 @@ export default function ResetPasswordPage() {
 
               <form onSubmit={onSubmit}>
                 <div className="field-group">
-                  <label>New password</label>
-                  <input className="input" type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} />
+                  <label htmlFor="new-password">New password</label>
+                  <input id="new-password" name="new-password" autoComplete="new-password" className="input" type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} />
                 </div>
                 <div className="field-group">
-                  <label>Confirm new password</label>
-                  <input className="input" type="password" placeholder="••••••••" value={confirm} onChange={(e) => setConfirm(e.target.value)} required minLength={8} />
+                  <label htmlFor="confirm-password">Confirm new password</label>
+                  <input id="confirm-password" name="confirm-password" autoComplete="new-password" className="input" type="password" placeholder="••••••••" value={confirm} onChange={(e) => setConfirm(e.target.value)} required minLength={8} />
                 </div>
                 <button className="btn btn-primary btn-block btn-lg" type="submit" disabled={busy || ready === null}>
                   {ready === null ? <><span className="spinner" aria-hidden="true" />Verifying link…</> : busy ? <><span className="spinner" aria-hidden="true" />Updating…</> : "Update password"}

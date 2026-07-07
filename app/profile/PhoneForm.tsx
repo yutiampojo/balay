@@ -37,8 +37,8 @@ export default function PhoneForm({ currentPhone, needsReconfirm }: { currentPho
 
       <form onSubmit={onSave}>
         <div className="field-group">
-          <label>Mobile number</label>
-          <input className="input" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="0917 123 4567" required />
+          <label htmlFor="phone">Mobile number</label>
+          <input id="phone" name="phone" type="tel" autoComplete="tel" className="input" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="0917 123 4567" required />
           <span className="sub">PH mobile format, e.g. 0917 123 4567.</span>
         </div>
         <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
